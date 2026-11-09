@@ -56,7 +56,7 @@
 
 ### transcript-card：忠实于你看到的
 
-装了 [gen-ui](https://github.com/changfenhuang/dsh-genui) 的环境里，对话中的 ` ```dsh-ui ` 块显示为卡片。导出的忠实目标是**你在 DSH 里看到的样子**，所以默认按卡片渲染：
+装了 [GenUI](https://github.com/omdsh-dev/dsh-genui) 的环境里，对话中的 ` ```dsh-ui ` 块显示为卡片。导出的忠实目标是**你在 DSH 里看到的样子**，所以默认按卡片渲染：
 
 | 层级 | 触发 | 图上表现 |
 |---|---|---|

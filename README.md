@@ -65,7 +65,7 @@ Reports from [dsh-fact-check](https://github.com/7starsseeker/dsh-fact-check) ge
 
 ### transcript-card: faithful to what you saw
 
-With [gen-ui](https://github.com/changfenhuang/dsh-genui) installed, ` ```dsh-ui ` blocks render as cards in the conversation. Fidelity therefore means *what you saw*, so cards are rendered by default:
+With [GenUI](https://github.com/omdsh-dev/dsh-genui) installed, ` ```dsh-ui ` blocks render as cards in the conversation. Fidelity therefore means *what you saw*, so cards are rendered by default:
 
 | Level | Trigger | Result |
 |---|---|---|

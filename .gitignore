@@ -3,6 +3,7 @@ out/
 *.png
 *.pdf
 !cases/**/*.png
+!assets/**/*.png
 
 # 依赖与构建产物（本插件零依赖，正常不会有；装上也不该入库）
 node_modules/

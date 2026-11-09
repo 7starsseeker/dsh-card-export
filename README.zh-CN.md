@@ -6,7 +6,11 @@
 
 [![selftest](https://github.com/7starsseeker/dsh-card-export/actions/workflows/selftest.yml/badge.svg)](https://github.com/7starsseeker/dsh-card-export/actions/workflows/selftest.yml)
 [![npm](https://img.shields.io/npm/v/dsh-card-export.svg)](https://www.npmjs.com/package/dsh-card-export)
+[![npm downloads](https://img.shields.io/npm/dm/dsh-card-export.svg)](https://www.npmjs.com/package/dsh-card-export)
 [![license](https://img.shields.io/badge/license-Apache--2.0-blue.svg)](LICENSE)
+[![node](https://img.shields.io/badge/node-%3E%3D22.15-brightgreen.svg)](package.json)
+[![zero dependencies](https://img.shields.io/badge/dependencies-0-brightgreen.svg)](package.json)
+[![DSH plugin](https://img.shields.io/badge/DSH-plugin-1F3A8A.svg)](https://github.com/7starsseeker)
 
 零 npm 依赖：不内置浏览器、不下载 Chromium，直接用机器上已有的 Chromium 系浏览器（Edge → Chrome → Brave/Chromium/Vivaldi），失败降级 PDF，再不行交付 HTML。
 

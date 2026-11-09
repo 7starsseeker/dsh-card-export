@@ -31,7 +31,7 @@ Read the `npm pack --dry-run` output yourself: **no** `out/`, `node_modules/`, l
 
 ## 3. Update the docs
 
-- `CHANGELOG.md`: new version section with Added / Changed / Fixed / known-limit changes.
+- `CHANGELOG.md` + `CHANGELOG.zh-CN.md`: new version section in both, with Added / Changed / Fixed / known-limit changes — never update only one.
 - `README.md` + `README.zh-CN.md`: keep them in sync when behaviour changes — never update only one.
 - `skills/<id>/SKILL.md`: the skill body is the single source of truth; do not keep a copy.
 

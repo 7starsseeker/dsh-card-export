@@ -29,7 +29,7 @@ npm pack --dry-run   # 看会被发布哪些文件
 
 ## 3. 更新文档
 
-- `CHANGELOG.md`：新增版本小节，写清 Added / Changed / Fixed / 已知边界变化。
+- `CHANGELOG.md` + `CHANGELOG.zh-CN.md`：两份各加一个新版本小节，写清 Added / Changed / Fixed / 已知边界变化，不能只改一份。
 - `README.md` + `README.zh-CN.md`：行为变了就同步，两份不能只改一份。
 - 对应 `skills/<id>/SKILL.md`：技能正文是唯一来源，不要另存副本。
 

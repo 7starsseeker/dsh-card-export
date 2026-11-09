@@ -30,7 +30,7 @@ For example an image not exported is written as `[图片] xxx.png · 1200×840 �
 - **New behaviour needs assertions.** Every `tools/smoke-*.mjs` covers one capability; add assertions with the behaviour.
 - **Derive assertions from the requirement, not from the implementation.** Writing the same constant in both places only proves it was written twice.
 - **Don't invent requirements.** No unrequested abstractions, fallbacks or alternative implementations. Something you thought of but did not build belongs in `CHANGELOG` (known limits) or an issue.
-- **Keep docs in sync.** Behaviour changes update `README.md`, `README.zh-CN.md`, the relevant `skills/<id>/SKILL.md`, and `CHANGELOG.md`. `SKILL.md` is the single source of truth for a skill's body — the plugin reads it at call time, so never keep a copy.
+- **Keep docs in sync.** Behaviour changes update `README.md`, `README.zh-CN.md`, the relevant `skills/<id>/SKILL.md`, and `CHANGELOG.md` + `CHANGELOG.zh-CN.md`. `SKILL.md` is the single source of truth for a skill's body — the plugin reads it at call time, so never keep a copy.
 
 ## Directory conventions
 

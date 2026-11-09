@@ -31,7 +31,7 @@ npm run doctor    # 渲染能力诊断
 - **新增能力要有断言**：每个 `tools/smoke-*.mjs` 对应一块能力，加了行为就加断言。
 - **断言从需求推，不从实现抄**：实现与断言写同一个常量，只证明"同一个数字写了两遍"。
 - **不发明需求**：没要求的抽象、兜底、多实现不要加；想到了但没做的，写进 `CHANGELOG` 的已知边界或开 issue。
-- **文档同步**：改了行为就改 `README.md` / `README.zh-CN.md` / 对应 `SKILL.md` / `CHANGELOG.md`。`SKILL.md` 是技能正文的唯一来源，插件在调用时现读，不要另存副本。
+- **文档同步**：改了行为就改 `README.md` / `README.zh-CN.md` / 对应 `SKILL.md` / `CHANGELOG.md` + `CHANGELOG.zh-CN.md`。`SKILL.md` 是技能正文的唯一来源，插件在调用时现读，不要另存副本。
 
 ## 目录约定
 

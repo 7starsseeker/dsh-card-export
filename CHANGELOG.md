@@ -1,80 +1,87 @@
 # Changelog
 
-本文件记录本项目的重要变更。格式参考 [Keep a Changelog](https://keepachangelog.com/zh-CN/1.1.0/)，
-版本号遵循 [语义化版本](https://semver.org/lang/zh-CN/)。
+> 中文版：[CHANGELOG.zh-CN.md](CHANGELOG.zh-CN.md)
+
+Important changes to this project. Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
+versioning follows [Semantic Versioning](https://semver.org/).
 
 ## [Unreleased]
 
-### 修复
+### Fixed
 
-- **README 里 GenUI 的链接指向一个不存在的账号**：`https://github.com/changfenhuang/dsh-genui` 是照 npm scope（`@changfenhuang/dsh-genui`）拼出来的，GitHub 上并没有 `changfenhuang` 这个账号（连用户页都是 404）。插件自己的 `package.json` 在 `repository` / `homepage` / `bugs` 三处都声明的是 `omdsh-dev/dsh-genui`，两份 README 的链接一并改到后者。
-- **同一个插件的显示名有两种写法**：正文写 `gen-ui`，插件自报的名字是 `GenUI`（`dshGo.title`）。两份 README 与 `skills/transcript-card/SKILL.md` 统一成 `GenUI`。
+- **The README linked GenUI at an account that does not exist**: `https://github.com/changfenhuang/dsh-genui` was assembled from the npm scope (`@changfenhuang/dsh-genui`), and there is no `changfenhuang` account on GitHub — even the user page is a 404. The plugin's own `package.json` declares `omdsh-dev/dsh-genui` in `repository`, `homepage` and `bugs`, so both READMEs now point there.
+- **One plugin carried two display names**: the prose said `gen-ui` while the plugin reports itself as `GenUI` (`dshGo.title`). Both READMEs and `skills/transcript-card/SKILL.md` now say `GenUI`.
+- **The Chinese README was missing four badges**: the English one carries seven (selftest / npm / npm downloads / license / node / zero dependencies / DSH plugin) while the Chinese one carried three (selftest / npm / license). The missing four are added, so both files now carry the same badges in the same order.
+
+### Changed
+
+- **The changelog now has an English twin**: the Chinese text moved to `CHANGELOG.zh-CN.md` and `CHANGELOG.md` is now English — matching the naming convention of the other four bilingual pairs (README / CONTRIBUTING / SECURITY / RELEASING), where the unsuffixed name is English and `.zh-CN` is Chinese. `files` and the doc-sync checklists in the RELEASING and CONTRIBUTING docs were extended for the pair.
 
 ## [0.1.1] — 2026-11-09
 
-只有文档与打包清单修正，`lib/` 与 `tools/` 代码零改动（`npm pack --dry-run` 除多带一份 `RELEASING.zh-CN.md` 外与原包一致）。发这个版本是为了让 npm 包页、仓库文档和 `engines` 三处说法一致，同时用它验证 Trusted Publishing（OIDC）链路。
+Documentation and packaging-manifest corrections only; `lib/` and `tools/` are untouched (`npm pack --dry-run` differs from the previous package only by the extra `RELEASING.zh-CN.md`). The release existed to make the npm package page, the repository docs and `engines` say the same thing, and to prove the Trusted Publishing (OIDC) path end to end.
 
-### 修复
+### Fixed
 
-- **Node 版本徽章写错**：README 徽章写的是 `node >=18`，而 `engines`、正文和 CI 都要求 `>=22.15.0`——会话日志是 zstd 压缩的，`node:zlib` 从 22.15 才有。
-- **`README.en.md` 并不存在，却被三处引用**：`README.zh-CN.md` 顶部那行是死链（英文版就是 `README.md`，上一行已经链过，删掉重复的）；`CONTRIBUTING.zh-CN.md` 与 `RELEASING.zh-CN.md` 的文档同步清单也把英文版写成了 `README.en.md`——英文文档里对应位置写的是 `README.zh-CN.md`，中文这边正好反了。
-- **自检规模写少了**：CHANGELOG 的 0.1.0 小节、`CONTRIBUTING.zh-CN.md`、`RELEASING.zh-CN.md` 都还写着「八组 / 约 236 项」，实际是十一组 364 项（`npm run smoke` 实测）。
-- **`RELEASING.zh-CN.md` 没被打进包**：`files` 里所有双语文档都成对列了，只漏了这一个，于是 npm 包页上的 `RELEASING.md` 点「中文版」是 404。补进去。
-- **0.1.0 小节「已知边界」里有一条重复了两遍**。
+- **The Node badge was wrong**: the README badge said `node >=18`, while `engines`, the prose and CI all require `>=22.15.0` — session logs are zstd-compressed, and `node:zlib` only gained that in 22.15.
+- **`README.en.md` does not exist, yet three places referenced it**: the line at the top of `README.zh-CN.md` was a dead link (the English version is `README.md`, already linked on the line above, so the duplicate is gone); the doc-sync checklists in `CONTRIBUTING.zh-CN.md` and `RELEASING.zh-CN.md` also named the English twin `README.en.md` — the English docs name the Chinese one `README.zh-CN.md` in that same slot, so the Chinese side had it exactly backwards.
+- **The self-test scale was understated**: the 0.1.0 section, `CONTRIBUTING.zh-CN.md` and `RELEASING.zh-CN.md` still said "eight suites / ~236 assertions"; it is eleven suites / 364 assertions (`npm run smoke`, measured).
+- **`RELEASING.zh-CN.md` was not in the package**: `files` listed every bilingual doc as a pair except this one, so "中文版" on the npm package page was a 404. Added.
+- **One line in the 0.1.0 known-limits list appeared twice.**
 
 ## [0.1.0] — 2026-11-09
 
-首个版本。两个技能 + 一套零依赖渲染底座。
+First release. Two skills on one zero-dependency rendering base.
 
-### 新增
+### Added
 
-- **插件骨架**：`ctx.skills.registerProvider` 注册两个技能，正文在调用时从各自 `SKILL.md` 现读，改完重启或热加载即生效；挂载时**不阻塞**（首装探测走 `setImmediate`）。
-- **`report-card`（RPC）**：任意 Markdown 报告 → 短图 + 长图。
-  - 短图由模型读全文后撰写（`--brief`：结论 / 要点 / 关键数字 / 边界）；没给 brief 时退化为「原文提取」，kicker 与页脚都明确标注。
-  - 长图严格按原报告结构、顺序、内容还原。
-  - 事实核查报告（命中「一句话结论 / 哪些是真的 / 来源」任意两段）自动出档位徽标、甲乙双轨、断言分档；`--brief` 只能覆盖判断与总结，**档位与双轨永远取自报告**。
-  - 缺段不补：缺的段落在长图末尾列出。
-- **`transcript-card`（TSC）**：DSH 会话 → 消息流长图。
-  - 范围四种：`--last N` / `--turns a-b` / `--seq a-b` / 引用式 `--from "…" --to "…"`（归一化后匹配，短引文需唯一命中）。
-  - 显示档位四档对齐客户端「工作步骤展示」：`compact` / `standard`（默认）/ `detailed` / `verbose`。
-  - 只认 `source.kind === 'user'` 为真人指令，6 类注入内容一律不进图；真人消息无 `turn` 字段，轮次按 `turn/start` 序号推导。
-  - 图片默认出占位标记（名字/尺寸/体积），`--with-images` 内嵌本地附件（单张 3 MB 上限）；`[表情: xxx]` 渲染为标签。
-  - 超长单条默认 1200 字截断并标注原文长度，`--max-chars` 可调。
-- **`dsh-ui` 迷你渲染器**：` ```dsh-ui ` 块默认渲染成卡片，三级兜底（卡片 → 单条原文 → 整块代码块）。缺 `type` 时按形状推断（`columns+rows`/`pairs`/`steps`/纯字符串 `items`），认不出就不猜。`--no-render-ui` 强制看原文。
-- **渲染降级链**：Edge → Chrome → Brave/Chromium/Vivaldi → PDF → HTML。容器内首轮失败若命中沙箱特征，自动追加 `--no-sandbox --disable-dev-shm-usage` 重试一次（不作默认）。
-- **首装探测**：真实渲染一次 PNG、一次 PDF 得出 `renderLevel`（png/pdf/html），按平台给建议；同时探测是否装了 dsh-fact-check（只介绍、不推销，有单测约束）。
-- **分隔线**：长图不切分，改为在内容单元边界画一条通栏细线——报告在每个二级小节之间、对话在每轮之间。它看起来是普通分节符，同时因为线到卡片边缘且完全水平，可直接当裁切参考。线永远在单元边界，不会落在句子或表格中间。
-- **配置**：包外 `config.json` 按技能 id 启停；旧键 `verdictCard` 仍识别。
-- **自检**：十一组共 364 项断言（`npm run smoke`）。
+- **Plugin skeleton**: `ctx.skills.registerProvider` registers the two skills; each body is read from its own `SKILL.md` at call time, so edits take effect on restart or hot reload. Mounting is **non-blocking** (the first-run probe runs on `setImmediate`).
+- **`report-card` (RPC)**: any Markdown report → summary image + full verbatim long image.
+  - The summary is written by the model after reading the whole report (`--brief`: conclusion / key points / key figures / limits); without a brief it degrades to extraction from the source, labelled as such in both the kicker and the footer.
+  - The full image reproduces the report's own structure, order and wording.
+  - Fact-check reports (any two of `一句话结论` / `哪些是真的` / `来源` present) automatically get the tier badge, the two rails and per-claim tiering; `--brief` may only override the judgement and the summary — **tiers and rails always come from the report**.
+  - Missing sections are not filled in: they are listed at the end of the full image.
+- **`transcript-card` (TSC)**: a DSH session excerpt → message-flow long image.
+  - Four range forms: `--last N` / `--turns a-b` / `--seq a-b` / quoted `--from "…" --to "…"` (matched after normalisation; a short quote must hit exactly once).
+  - Four display levels aligned with the client's "work steps" setting: `compact` / `standard` (the default) / `detailed` / `verbose`.
+  - Only `source.kind === 'user'` counts as a human instruction; six kinds of injected content never enter the image. Human messages carry no `turn` field, so turn numbers are derived from `turn/start` ordinals.
+  - Images render as placeholders by default (name / dimensions / size); `--with-images` embeds local attachments (3 MB per image); `[表情: xxx]` renders as a label.
+  - A single over-long message is truncated at 1200 characters by default with the original length noted; `--max-chars` adjusts it.
+- **`dsh-ui` mini renderer**: ` ```dsh-ui ` blocks render as cards by default, with three levels of fallback (card → item kept verbatim → whole block as a code fence). When `type` is missing the shape is inferred (`columns+rows` / `pairs` / `steps` / plain-string `items`); what cannot be recognised is never guessed. `--no-render-ui` forces the raw text.
+- **Render degradation chain**: Edge → Chrome → Brave/Chromium/Vivaldi → PDF → HTML. If the first in-container attempt fails with sandbox characteristics, one retry appends `--no-sandbox --disable-dev-shm-usage` (never the default).
+- **First-run probe**: renders one real PNG and one real PDF to derive `renderLevel` (`png`/`pdf`/`html`) and gives platform-specific advice; it also checks whether dsh-fact-check is installed (introduces it, never promotes it — enforced by a test).
+- **Dividers**: the long image is not split; instead a full-bleed hairline is drawn at content-unit boundaries — between `##` sections in reports, between turns in conversations. It reads as an ordinary section break, and because the line reaches the card edge and is perfectly horizontal it doubles as a cutting guide. The line always sits on a unit boundary, never inside a sentence or a table.
+- **Configuration**: an out-of-package `config.json` enables or disables each skill by id; the old `verdictCard` key is still recognised.
+- **Self-tests**: eleven suites, 364 assertions (`npm run smoke`).
 
-### 修复（对照真实报告发现）
+### Fixed (found against real reports)
 
-- **表格型段落被静默丢弃**：核查报告的「哪些是真的（#/论断/来源/定档表）」「本次未能核实到的（缺口/尝试/结果表）」原来只按 `- ` 项目符号解析，整张表不进图。现在按内容形态选渲染方式——带表格或 `###` 子标题的小节一律按原文 Markdown 渲染。
-- **有序列表编号全是 1**：两个原因叠加——空行无条件结束列表；拼接正文时 `trim()` 掉了续行缩进，导致每项各自成组。
-- **段尾 `---` 被当正文画出**：解析阶段直接丢弃分隔线行。
-- **粗体里嵌斜体时整对 `**` 漏出**（`**…*not*…**`），以及 `***x***` 产生错配标签。
-- **表格 `\|` 转义把单元格切断**；**缺首尾竖线的表格不被识别**。
-- **图片语法变成 `!` + 链接**；**自动链接 `<https://…>` 原样露字符**；**Setext `===` 标题**不识别。
-- 双轨标题改写丢了报告自己的限定语；来源附录丢了分组标题与末尾的注；序号字号偏小（11px→15px）。
+- **Table-bearing sections were silently dropped**: "哪些是真的" (claim / source / tier table) and "本次未能核实到的" (gap / attempt / result table) in fact-check reports were parsed as `- ` bullets only, so the whole table never reached the image. The renderer now picks by content shape: any section carrying a table or `###` subheadings is rendered as its original Markdown.
+- **Ordered-list numbers were all 1**: two causes compounding — a blank line unconditionally ended the list, and `trim()` on continuation lines during assembly dropped their indentation, so each item became its own group.
+- **A trailing `---` was drawn as body text**: divider lines are now dropped while parsing.
+- **Italic inside bold leaked the whole `**` pair** (`**…*not*…**`), and `***x***` produced mismatched tags.
+- **`\|` inside tables cut cells apart**; **tables without leading or trailing pipes were not recognised**.
+- **Image syntax became `!` plus a link**; **autolinks `<https://…>` showed their punctuation**; **Setext `===` headings** were not recognised.
+- The two-rail heading rewrite dropped the report's own qualifier; the source appendix lost its group heading and closing note; the sequence-number font was too small (11px → 15px).
 
-### 变更（HTML 与公式）
+### Changed (HTML and math)
 
-- **HTML 直通改为出图前询问**：文档含原始 HTML 时不再擅自决定——命令退出码 4、零文件产出，返回 `htmlAsk`（按 `math` / `style` / `active` 分类统计 + 问句 + `--html on|off` 两个选项）；`<script>`/`<img>` 等归为 `active` 并在问句里提示建议选字面。纯文本文档不受影响，`--preflight` 可只检测不出图。
-- **对话卡片永远转义**：`dsh-ui` 卡片内容来自会话原文，走 `inline(..., { html: false })`，不受 `--html` 影响。
-- **数学公式走 MathML 零依赖路径**：Chromium 内置排版，`displaystyle="true"` 让上下限堆叠、`stretchy="true"` 让括号伸缩。实测 8 类常见公式语义 0 失真；长嵌套（加权交叉熵）逐项核对一致。
+- **Raw HTML now asks before rendering**: a document containing raw HTML is no longer decided silently — the command exits 4 with zero files written and returns `htmlAsk` (counts by `math` / `style` / `active`, the question, and the two `--html on|off` options); `<script>`/`<img>` and friends are classified `active` and the question suggests the literal option. Plain-text documents are unaffected, and `--preflight` can detect without rendering.
+- **Conversation cards are always escaped**: `dsh-ui` card content comes from session text and goes through `inline(..., { html: false })`, unaffected by `--html`.
+- **Math goes through a zero-dependency MathML path**: Chromium lays it out natively; `displaystyle="true"` stacks limits and `stretchy="true"` scales delimiters. Eight common formula classes measured with zero semantic loss; long nesting (weighted cross-entropy) checked term by term.
 
-### 新增自检
+### New self-tests
 
-- `smoke-coverage`（内容完整性，20 项）：逐行核对原文是否都落在图上。
-- `smoke-conformance`（Markdown 对照，56 项）：30 种语法结构 + 已知边界的显式断言 + HTML 检测器。
-- `smoke-math`（数学公式，20 项）：MathML 结构、`displaystyle`/`stretchy` 属性不被吃掉、长嵌套公式、代码块内 LaTeX 保持字面。
+- `smoke-coverage` (content completeness, 20 assertions): checks line by line that every source line reached the image.
+- `smoke-conformance` (Markdown conformance, 56 assertions): 30 constructs + explicit assertions for the known limits + the HTML detector.
+- `smoke-math` (math, 20 assertions): MathML structure, `displaystyle`/`stretchy` surviving, long nested formulas, LaTeX inside fenced blocks staying literal.
 
-### 已知边界
+### Known limits
 
-- 长图不分页（`--split` 已取消）：需要分段时沿图上的分隔线裁。
-- Markdown 支持子集：列表内嵌表格会被拍平成一行；脚注、数学公式不解析；HTML 一律转义（不执行）。
-- 字体吃系统字栈，跨机器字形有差异。
-- 容器沙箱重试路径只单测了判据，未在受限容器里跑完整链路。
+- The long image is not paginated (`--split` is gone): cut along the drawn dividers when you need segments.
+- Markdown support is a subset: a table inside a list is flattened to one line; footnotes and math are not parsed; HTML is always escaped (never executed).
+- Fonts come from the system stack, so glyphs differ across machines.
+- The container sandbox retry path is unit-tested at the predicate only; the full chain has not been run inside a restricted container.
 
 [Unreleased]: https://github.com/7starsseeker/dsh-card-export/compare/v0.1.1...HEAD
 [0.1.1]: https://github.com/7starsseeker/dsh-card-export/releases/tag/v0.1.1

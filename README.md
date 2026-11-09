@@ -73,7 +73,7 @@ Pass `--no-render-ui` to always see raw JSON.
 
 ## Requirements
 
-- **Node.js ≥ 18** (uses built-in zstd to read session logs)
+- **Node.js ≥ 22.15** (session logs are zstd-compressed; `node:zlib` gained zstd in 22.15)
 - **One Chromium-family browser** for rasterisation: Edge / Chrome / Brave / Chromium / Vivaldi
 - DSH (as a plugin), or call the CLIs under `tools/` directly
 

@@ -1,0 +1,17 @@
+<!DOCTYPE html>
+<html lang="zh-CN" data-h="180"><head><meta charset="utf-8"><title>H=180</title>
+<style>
+  html,body{margin:0;width:180px;height:180px;overflow:hidden}
+  .sq{width:180px;height:180px;background:#0A0A0A;position:relative;display:flex;
+      align-items:center;justify-content:center}
+  .sq::before{content:"";position:absolute;left:0;top:0;width:180px;height:6px;background:#1F3A8A}
+  .mark{width:104px;height:104px;border:6px solid #FAFAF8;border-radius:10px;position:relative;
+        box-sizing:border-box}
+  .mark::before{content:"";position:absolute;left:12px;right:12px;top:18px;height:7px;background:#FAFAF8;border-radius:2px}
+  .mark::after{content:"";position:absolute;left:12px;right:12px;top:40px;height:7px;background:#FAFAF8;border-radius:2px}
+  .bar{position:absolute;left:12px;width:52px;height:7px;background:#1F3A8A;border-radius:2px;top:62px}
+  .tail{position:absolute;right:-2px;bottom:-2px;width:26px;height:26px;background:#1F3A8A;
+        border-radius:0 0 8px 0}
+</style></head><body>
+<div class="sq"><div class="mark"><div class="bar"></div><div class="tail"></div></div></div>
+</body></html>

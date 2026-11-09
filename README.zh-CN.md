@@ -68,7 +68,7 @@
 
 ## 环境要求
 
-- **Node.js ≥ 18**（用到内建 zstd 解压读会话日志）
+- **Node.js ≥ 22.15**（会话日志是 zstd 压缩的，`node:zlib` 从 22.15 才有 zstd）
 - **Chromium 系浏览器之一**（用于栅格化）：Edge / Chrome / Brave / Chromium / Vivaldi
 - DSH（插件形态），或直接调用 `tools/` 下的 CLI（不装插件也能跑）
 

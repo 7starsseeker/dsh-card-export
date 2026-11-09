@@ -61,7 +61,7 @@ The preset decides the output, not the content: `report` (the default) gives two
 - **Summary image** — as much information as possible in a small space. The conclusion is **written by the model after reading the report** (`--brief`); the renderer only lays it out. Without a brief it degrades to an explicitly labelled "extracted from source" card.
 - **Full image** — the report's own structure, order and wording, section by section. No reordering, no omission, no rewriting, no summarising on the author's behalf.
 
-Fact-check reports are a skin within the `report` preset: the summary card also carries the tier breakdown, the two rails (甲轨/乙轨), and the one-sentence takeaway — but **tiers and rails always come from the report itself**, never from a brief.
+Reports from [dsh-fact-check](https://github.com/7starsseeker/dsh-fact-check) get a skin within the `report` preset: the summary card also carries the tier breakdown, the two rails (甲轨/乙轨), and the one-sentence takeaway — but **tiers and rails always come from the report itself**, never from a brief. The skin is detected from that report's own headings (two of `## 一句话结论` / `## 哪些是真的` / `## 来源`), so the coupling is owned by the fact-check template, not by this plugin.
 
 ### transcript-card: faithful to what you saw
 

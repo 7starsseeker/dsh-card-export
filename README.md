@@ -40,8 +40,10 @@ Zero npm dependencies. No bundled browser, no Chromium download: it drives the C
 
 Two things on one rendering base:
 
-1. **Report → image.** Any Markdown report becomes a shareable long image. Fact-check reports (the [dsh-fact-check](https://github.com/7starsseeker/dsh-fact-check) structure) additionally get a concise summary card.
-2. **Conversation → image.** A selected span of a DSH session becomes a message-flow image, with user turns and assistant replies; thinking blocks and tool calls are optional.
+1. **Report → two images.** Any Markdown report rendered through the `report` preset (the default) produces **a summary card plus a full verbatim long image**.
+2. **Conversation → one image.** A selected span of a DSH session becomes a message-flow image, with user turns and assistant replies; thinking blocks and tool calls are optional.
+
+A single image only happens when you ask for it: `--preset generic`, meant for non-report documents (notes, explanations, checklists).
 
 Rendering only, never rewriting: **what is not in the report does not appear in the image, and nothing in the conversation is invented.**
 
@@ -54,10 +56,12 @@ Rendering only, never rewriting: **what is not in the report does not appear in 
 
 ### report-card: why two images
 
+The preset decides the output, not the content: `report` (the default) gives two images, `generic` (explicit) gives one.
+
 - **Summary image** — as much information as possible in a small space. The conclusion is **written by the model after reading the report** (`--brief`); the renderer only lays it out. Without a brief it degrades to an explicitly labelled "extracted from source" card.
 - **Full image** — the report's own structure, order and wording, section by section. No reordering, no omission, no rewriting, no summarising on the author's behalf.
 
-For fact-check reports the summary card also carries the tier breakdown, the two rails (甲轨/乙轨), and one-sentence takeaway — but **tiers and rails always come from the report itself**, never from a brief.
+Fact-check reports are a skin within the `report` preset: the summary card also carries the tier breakdown, the two rails (甲轨/乙轨), and the one-sentence takeaway — but **tiers and rails always come from the report itself**, never from a brief.
 
 ### transcript-card: faithful to what you saw
 

@@ -1,7 +1,7 @@
 ---
 name: report-card
 version: 0.2.0
-description: 报告图片化导出（Report Card，缩写 RPC）。把任意 Markdown 报告渲染成可分享的长图；对事实核查报告（dsh-fact-check 的 Step 4 模板）会自动切换成「首图 + 细节图」两张，其他报告输出单张。当用户说「把这个报告做成图」「导出成图片」「出一张长图」时使用。
+description: 报告图片化导出（Report Card，缩写 RPC）。把任意 Markdown 报告渲染成两张可分享的图：「短图（结论）+ 长图（完整原文）」，预设为 report 时一律两张；只有显式选 generic 才是单张（非报告类文档）。事实核查报告在 report 预设下换用另一套皮肤，短图多出档位、双轨与断言分档。当用户说「把这个报告做成图」「导出成图片」「出一张长图」时使用。
 ---
 
 # 报告图片化导出（RPC）

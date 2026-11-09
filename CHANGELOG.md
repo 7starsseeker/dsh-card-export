@@ -5,6 +5,18 @@
 
 ## [Unreleased]
 
+## [0.1.1] — 2026-11-09
+
+只有文档与打包清单修正，`lib/` 与 `tools/` 代码零改动（`npm pack --dry-run` 除多带一份 `RELEASING.zh-CN.md` 外与原包一致）。发这个版本是为了让 npm 包页、仓库文档和 `engines` 三处说法一致，同时用它验证 Trusted Publishing（OIDC）链路。
+
+### 修复
+
+- **Node 版本徽章写错**：README 徽章写的是 `node >=18`，而 `engines`、正文和 CI 都要求 `>=22.15.0`——会话日志是 zstd 压缩的，`node:zlib` 从 22.15 才有。
+- **`README.en.md` 并不存在，却被三处引用**：`README.zh-CN.md` 顶部那行是死链（英文版就是 `README.md`，上一行已经链过，删掉重复的）；`CONTRIBUTING.zh-CN.md` 与 `RELEASING.zh-CN.md` 的文档同步清单也把英文版写成了 `README.en.md`——英文文档里对应位置写的是 `README.zh-CN.md`，中文这边正好反了。
+- **自检规模写少了**：CHANGELOG 的 0.1.0 小节、`CONTRIBUTING.zh-CN.md`、`RELEASING.zh-CN.md` 都还写着「八组 / 约 236 项」，实际是十一组 364 项（`npm run smoke` 实测）。
+- **`RELEASING.zh-CN.md` 没被打进包**：`files` 里所有双语文档都成对列了，只漏了这一个，于是 npm 包页上的 `RELEASING.md` 点「中文版」是 404。补进去。
+- **0.1.0 小节「已知边界」里有一条重复了两遍**。
+
 ## [0.1.0] — 2026-11-09
 
 首个版本。两个技能 + 一套零依赖渲染底座。
@@ -28,7 +40,7 @@
 - **首装探测**：真实渲染一次 PNG、一次 PDF 得出 `renderLevel`（png/pdf/html），按平台给建议；同时探测是否装了 dsh-fact-check（只介绍、不推销，有单测约束）。
 - **分隔线**：长图不切分，改为在内容单元边界画一条通栏细线——报告在每个二级小节之间、对话在每轮之间。它看起来是普通分节符，同时因为线到卡片边缘且完全水平，可直接当裁切参考。线永远在单元边界，不会落在句子或表格中间。
 - **配置**：包外 `config.json` 按技能 id 启停；旧键 `verdictCard` 仍识别。
-- **自检**：八组共约 236 项断言（`npm run smoke`）。
+- **自检**：十一组共 364 项断言（`npm run smoke`）。
 
 ### 修复（对照真实报告发现）
 
@@ -57,8 +69,8 @@
 - 长图不分页（`--split` 已取消）：需要分段时沿图上的分隔线裁。
 - Markdown 支持子集：列表内嵌表格会被拍平成一行；脚注、数学公式不解析；HTML 一律转义（不执行）。
 - 字体吃系统字栈，跨机器字形有差异。
-- 字体吃系统字栈，跨机器字形有差异。
 - 容器沙箱重试路径只单测了判据，未在受限容器里跑完整链路。
 
-[Unreleased]: https://github.com/7starsseeker/dsh-card-export/compare/v0.1.0...HEAD
+[Unreleased]: https://github.com/7starsseeker/dsh-card-export/compare/v0.1.1...HEAD
+[0.1.1]: https://github.com/7starsseeker/dsh-card-export/releases/tag/v0.1.1
 [0.1.0]: https://github.com/7starsseeker/dsh-card-export/releases/tag/v0.1.0

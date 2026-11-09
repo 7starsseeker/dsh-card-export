@@ -19,7 +19,7 @@
 ```bash
 node -e "const p=require('./package.json'); if(Object.keys(p.dependencies||{}).length) {console.error('依赖不为空，阻断发版'); process.exit(1)}; console.log('零依赖 OK')"
 
-npm run smoke     # 八组自检
+npm run smoke     # 十一组自检，364 项
 npm run doctor    # 渲染能力诊断（需要浏览器）
 
 npm pack --dry-run   # 看会被发布哪些文件
@@ -30,7 +30,7 @@ npm pack --dry-run   # 看会被发布哪些文件
 ## 3. 更新文档
 
 - `CHANGELOG.md`：新增版本小节，写清 Added / Changed / Fixed / 已知边界变化。
-- `README.md` + `README.en.md`：行为变了就同步，两份不能只改一份。
+- `README.md` + `README.zh-CN.md`：行为变了就同步，两份不能只改一份。
 - 对应 `skills/<id>/SKILL.md`：技能正文是唯一来源，不要另存副本。
 
 ## 4. 提交与打 tag

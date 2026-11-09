@@ -10,8 +10,6 @@
 
 零 npm 依赖：不内置浏览器、不下载 Chromium，直接用机器上已有的 Chromium 系浏览器（Edge → Chrome → Brave/Chromium/Vivaldi），失败降级 PDF，再不行交付 HTML。
 
-> English: [README.en.md](README.en.md)
-
 ---
 
 ## 目录

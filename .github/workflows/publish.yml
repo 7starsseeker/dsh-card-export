@@ -62,7 +62,25 @@ jobs:
             exit 1
           fi
 
+      # Idempotent: a version that already exists on npm is not an error.
+      # This covers the one-time manual publish of the first release, and any
+      # re-run of the workflow on a tag that has already shipped.
+      - name: Skip when this version already exists on npm
+        id: existing
+        shell: bash
+        run: |
+          set -eo pipefail
+          NAME=$(node -p "require('./package.json').name")
+          VER=$(node -p "require('./package.json').version")
+          if npm view "$NAME@$VER" version >/dev/null 2>&1; then
+            echo "$NAME@$VER is already on npm — nothing to publish."
+            echo "skip=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "skip=false" >> "$GITHUB_OUTPUT"
+          fi
+
       # No NODE_AUTH_TOKEN: npm exchanges the GitHub OIDC token for a
       # short-lived credential itself.
       - name: Publish to npm
+        if: steps.existing.outputs.skip != 'true'
         run: npm publish --access public --provenance

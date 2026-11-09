@@ -1,5 +1,7 @@
 # 参与贡献
 
+> English: [CONTRIBUTING.md](CONTRIBUTING.md) · 本文为中文版
+
 ## 先跑一遍自检
 
 ```bash

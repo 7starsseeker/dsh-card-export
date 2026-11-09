@@ -12,6 +12,7 @@ versioning follows [Semantic Versioning](https://semver.org/).
 - **The README linked GenUI at an account that does not exist**: `https://github.com/changfenhuang/dsh-genui` was assembled from the npm scope (`@changfenhuang/dsh-genui`), and there is no `changfenhuang` account on GitHub — even the user page is a 404. The plugin's own `package.json` declares `omdsh-dev/dsh-genui` in `repository`, `homepage` and `bugs`, so both READMEs now point there.
 - **One plugin carried two display names**: the prose said `gen-ui` while the plugin reports itself as `GenUI` (`dshGo.title`). Both READMEs and `skills/transcript-card/SKILL.md` now say `GenUI`.
 - **The Chinese README was missing four badges**: the English one carries seven (selftest / npm / npm downloads / license / node / zero dependencies / DSH plugin) while the Chinese one carried three (selftest / npm / license). The missing four are added, so both files now carry the same badges in the same order.
+- **The language-switch line sat in five different places**: seven of the ten files were off — `README.md` and `RELEASING.md` put it after the intro, the `CONTRIBUTING` and `SECURITY` pairs had no such line at all, and `RELEASING.zh-CN.md` had none either; only `README.zh-CN.md` and the changelog pair kept it under the title. All five pairs now follow one rule: immediately below the H1, one blank line apart. English side `> 中文版：[X.zh-CN.md](X.zh-CN.md)`, Chinese side `> English: [X.md](X.md) · 本文为中文版`.
 
 ### Changed
 

@@ -12,6 +12,7 @@
 - **README 里 GenUI 的链接指向一个不存在的账号**：`https://github.com/changfenhuang/dsh-genui` 是照 npm scope（`@changfenhuang/dsh-genui`）拼出来的，GitHub 上并没有 `changfenhuang` 这个账号（连用户页都是 404）。插件自己的 `package.json` 在 `repository` / `homepage` / `bugs` 三处都声明的是 `omdsh-dev/dsh-genui`，两份 README 的链接一并改到后者。
 - **同一个插件的显示名有两种写法**：正文写 `gen-ui`，插件自报的名字是 `GenUI`（`dshGo.title`）。两份 README 与 `skills/transcript-card/SKILL.md` 统一成 `GenUI`。
 - **中文 README 比英文少四个徽章**：英文版七个（selftest / npm / npm downloads / license / node / zero dependencies / DSH plugin），中文版只有三个（selftest / npm / license）。补上缺的四个，两份的徽章与顺序就此一致。
+- **五对双语文档的语言切换行位置不统一**：十份文件里七份不合规——`README.md` 与 `RELEASING.md` 把切换行放在导语之后，`CONTRIBUTING` 与 `SECURITY` 两对四份干脆没有这一行，`RELEASING.zh-CN.md` 也没有；只有 `README.zh-CN.md` 和 CHANGELOG 这一对在标题正下方。现在统一成「H1 正下方、空行隔开」，英文页写 `> 中文版：[X.zh-CN.md](X.zh-CN.md)`，中文页写 `> English: [X.md](X.md) · 本文为中文版`。
 
 ### 变更
 

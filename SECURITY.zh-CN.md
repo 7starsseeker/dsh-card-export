@@ -1,5 +1,7 @@
 # 安全策略
 
+> English: [SECURITY.md](SECURITY.md) · 本文为中文版
+
 ## 这个项目是什么
 
 一个**只做渲染**的 DSH 插件：把 Markdown 报告和 DSH 会话片段变成图片。它不联网、不调用任何远程 API、不发遥测。

@@ -1,5 +1,7 @@
 # 发版流程
 
+> English: [RELEASING.md](RELEASING.md) · 本文为中文版
+
 面向维护者。三条原则先写在前面：
 
 1. **零依赖不许破**：`dependencies` 必须保持为空，`package.json` 里出现任何依赖都算阻断项。

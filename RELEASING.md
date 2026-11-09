@@ -1,12 +1,12 @@
 # Release flow / 发版流程
 
+> 中文版：[RELEASING.zh-CN.md](RELEASING.zh-CN.md)
+
 For maintainers. Three rules first:
 
 1. **Zero dependencies is non-negotiable.** `dependencies` must stay empty; anything there blocks the release.
 2. **Run the self-tests before every release** and paste the raw output into the release notes (not "it passes").
 3. **Tag first, then publish.** Reversed order leaves npm with a version GitHub has no tag for.
-
-> 中文版：[RELEASING.zh-CN.md](RELEASING.zh-CN.md)
 
 ## 1. Choosing a version
 

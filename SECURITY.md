@@ -1,5 +1,7 @@
 # Security policy
 
+> 中文版：[SECURITY.zh-CN.md](SECURITY.zh-CN.md)
+
 ## What this project is
 
 A **render-only** DSH plugin: it turns Markdown reports and DSH session excerpts into images. It makes no network requests, calls no remote API, and sends no telemetry.

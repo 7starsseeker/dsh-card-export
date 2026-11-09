@@ -1,5 +1,7 @@
 # Contributing
 
+> 中文版：[CONTRIBUTING.zh-CN.md](CONTRIBUTING.zh-CN.md)
+
 ## Run the self-tests first
 
 ```bash

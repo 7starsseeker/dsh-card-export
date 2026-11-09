@@ -1,5 +1,7 @@
 # dsh-card-export
 
+> 中文版：[README.zh-CN.md](README.zh-CN.md)
+
 Turn Markdown reports and DSH conversations into shareable images. A **DeepSeek Harness plugin** with two skills.
 
 [![selftest](https://github.com/7starsseeker/dsh-card-export/actions/workflows/selftest.yml/badge.svg)](https://github.com/7starsseeker/dsh-card-export/actions/workflows/selftest.yml)
@@ -11,8 +13,6 @@ Turn Markdown reports and DSH conversations into shareable images. A **DeepSeek 
 [![DSH plugin](https://img.shields.io/badge/DSH-plugin-1F3A8A.svg)](https://github.com/7starsseeker)
 
 Zero npm dependencies. No bundled browser, no Chromium download: it drives the Chromium-family browser already on the machine (Edge → Chrome → Brave/Chromium/Vivaldi), degrades to PDF, then delivers HTML.
-
-> 中文文档：[README.zh-CN.md](README.zh-CN.md)
 
 ---
 

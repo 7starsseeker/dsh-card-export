@@ -42,19 +42,37 @@ git tag -a v0.x.y -m "v0.x.y"
 git push origin main --follow-tags
 ```
 
-## 5. 发布到 npm
+## 5. 发布到 npm —— Trusted Publishing（OIDC），不需要 token
 
-```bash
-npm publish --access public
-```
+本仓库用 **npm 可信发布**：不存 `NPM_TOKEN`、仓库里没有任何密钥，npm 接受由 GitHub OIDC 换来的短期凭据。
 
-`package.json` 里已声明 `publishConfig.access = public` 与官方 registry。
+一次性配置（每个包只做一次）：
+
+1. **首版手动发。** 可信发布要绑定已存在的包，所以 0.1.0 手动上传：
+
+   ```bash
+   npm login
+   npm publish --access public
+   ```
+
+2. **绑定可信发布者。** npmjs.com → 该包 → Settings → Trusted publisher → GitHub Actions：
+
+   | 字段 | 值 |
+   |---|---|
+   | Organization or user | `7starsseeker` |
+   | Repository | `dsh-card-export` |
+   | Workflow filename | `publish.yml` |
+   | Environment | （留空） |
+
+3. **之后靠 tag。** `git push origin v0.x.y` → workflow 跑自检、校验 tag 与 `package.json` 版本一致、带 provenance 发布。
 
 发布后核对：
 
 ```bash
 npm view dsh-card-export version dist.tarball
 ```
+
+报错对照：`ENEEDAUTH` = 可信发布者还没绑定，或包还不存在（首版没发）；npm 版本报错 = 工作流里 `npm install -g npm@latest` 那步没生效，可信发布要求 npm ≥ 11.5.1。
 
 ## 6. GitHub Release
 

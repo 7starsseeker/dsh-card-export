@@ -1,76 +1,102 @@
-# 发版流程
+# Release flow / 发版流程
 
-面向维护者。三条原则先写在前面：
+For maintainers. Three rules first:
 
-1. **零依赖不许破**：`dependencies` 必须保持为空，`package.json` 里出现任何依赖都算阻断项。
-2. **发版前必须跑自检**，并把原始输出贴进 release notes（不要写"跑过了"）。
-3. **先 tag 后 publish**，顺序反了会造成 npm 上有版本、GitHub 上没有对应 tag。
+1. **Zero dependencies is non-negotiable.** `dependencies` must stay empty; anything there blocks the release.
+2. **Run the self-tests before every release** and paste the raw output into the release notes (not "it passes").
+3. **Tag first, then publish.** Reversed order leaves npm with a version GitHub has no tag for.
 
-## 1. 版本号怎么定
+> 中文版：[RELEASING.zh-CN.md](RELEASING.zh-CN.md)
 
-| 变更 | 版本 |
+## 1. Choosing a version
+
+| Change | Version |
 |---|---|
-| 修 bug、改文案、调样式 | patch（0.1.0 → 0.1.1） |
-| 新增技能 / 新增参数 / 新增输出形态 | minor（0.1.0 → 0.2.0） |
-| 破坏既有 CLI 参数或输出文件命名 | major（0.x 阶段按 minor 处理并在 CHANGELOG 标注 BREAKING） |
+| Bug fix, wording, styling | patch (0.1.0 → 0.1.1) |
+| New skill / new flag / new output form | minor (0.1.0 → 0.2.0) |
+| Breaking CLI flags or output filenames | major (during 0.x, use minor and mark BREAKING in CHANGELOG) |
 
-## 2. 发版前检查
+## 2. Pre-release checks
 
 ```bash
-node -e "const p=require('./package.json'); if(Object.keys(p.dependencies||{}).length) {console.error('依赖不为空，阻断发版'); process.exit(1)}; console.log('零依赖 OK')"
+node -e "const p=require('./package.json'); if(Object.keys(p.dependencies||{}).length) {console.error('dependencies are not empty, blocking'); process.exit(1)}; console.log('zero deps OK')"
 
-npm run smoke     # 八组自检
-npm run doctor    # 渲染能力诊断（需要浏览器）
+npm run smoke     # eleven suites, 364 assertions
+npm run doctor    # render-capability diagnosis (needs a browser)
 
-npm pack --dry-run   # 看会被发布哪些文件
+npm pack --dry-run
 ```
 
-`npm pack --dry-run` 的输出要人工过一遍：**不能出现** `out/`、`node_modules/`、本机配置、会话文件、临时脚本。
+Read the `npm pack --dry-run` output yourself: **no** `out/`, `node_modules/`, local config, session files, or scratch scripts.
 
-## 3. 更新文档
+## 3. Update the docs
 
-- `CHANGELOG.md`：新增版本小节，写清 Added / Changed / Fixed / 已知边界变化。
-- `README.md` + `README.en.md`：行为变了就同步，两份不能只改一份。
-- 对应 `skills/<id>/SKILL.md`：技能正文是唯一来源，不要另存副本。
+- `CHANGELOG.md`: new version section with Added / Changed / Fixed / known-limit changes.
+- `README.md` + `README.zh-CN.md`: keep them in sync when behaviour changes — never update only one.
+- `skills/<id>/SKILL.md`: the skill body is the single source of truth; do not keep a copy.
 
-## 4. 提交与打 tag
+## 4. Commit and tag
 
 ```bash
 git add -A
 git commit -m "chore(release): v0.x.y"
 git tag -a v0.x.y -m "v0.x.y"
-git push origin main --follow-tags
+git push origin main
+git push origin v0.x.y
 ```
 
-## 5. 发布到 npm
+Pushing the tag triggers `.github/workflows/publish.yml`.
 
-```bash
-npm publish --access public
-```
+## 5. Publishing to npm — via Trusted Publishing, no token
 
-`package.json` 里已声明 `publishConfig.access = public` 与官方 registry。
+This repository publishes with **npm Trusted Publishing (OIDC)**. No `NPM_TOKEN`, no secret in the repository; npm accepts a short-lived credential minted from the GitHub OIDC token.
 
-发布后核对：
+One-time setup, only needed once per package:
+
+1. **Publish the first version by hand.** Trusted publishing binds to an existing package, so 0.1.0 goes up manually:
+
+   ```bash
+   npm login
+   npm publish --access public
+   ```
+
+2. **Attach the trusted publisher.** npmjs.com → the package → Settings → Trusted publisher → GitHub Actions:
+
+   | Field | Value |
+   |---|---|
+   | Organization or user | `7starsseeker` |
+   | Repository | `dsh-card-export` |
+   | Workflow filename | `publish.yml` |
+   | Environment | *(empty)* |
+
+3. **From then on, the tag does it.** `git push origin v0.x.y` → the workflow runs the self-tests, verifies tag == `package.json` version, and publishes with a provenance attestation.
+
+After publishing, verify:
 
 ```bash
 npm view dsh-card-export version dist.tarball
+npm view dsh-card-export --json | grep -i provenance
 ```
+
+If the workflow fails with `ENEEDAUTH`, either the trusted publisher is not attached yet or the package does not exist (first publish still pending). If it fails on npm version, the workflow's `npm install -g npm@latest` step did not take — trusted publishing needs npm ≥ 11.5.1.
 
 ## 6. GitHub Release
 
-用 tag 生成 release，正文贴 `CHANGELOG.md` 对应小节 + 自检原始输出。
+Create the release from the tag, with the matching `CHANGELOG.md` section plus the raw self-test output.
 
-## 7. 插件市场
+## 7. Plugin marketplace
 
-市场按插件来源区分展示：
+The marketplace shows a plugin differently depending on how it is declared:
 
-| 声明形式 | 市场显示 | 更新机制 |
+| Declaration | Card | Update path |
 |---|---|---|
-| `dsh plugin add dsh-card-export`（registry 语义版本） | 普通已安装卡片 | 走 npm，需发版 + `dsh plugin update` |
-| `dsh plugin add <本地路径>`（生成 `link:` 声明） | **本地开发** | 改源码重启即生效，不发版 |
+| `dsh plugin add dsh-card-export` (registry semver) | normal installed card | npm: publish + `dsh plugin update` |
+| `dsh plugin add <local path>` (yields `link:`) | **local dev** | edits take effect on restart, no release |
 
-判断依据是依赖声明是否匹配 `^(?:link|file):`，与是否"开发中"无关——想进入正常更新通道，就把 `link:` 换成 npm 版本号。
+The test is whether the dependency matches `^(?:link|file):`, not whether you are "still developing" — switch `link:` to an npm version to enter the normal update channel.
 
-## 8. 回滚
+Submission itself is one YAML file in [awesome-dsh-plugin](https://github.com/awesome-dsh-plugin/awesome-dsh-plugin): `data/plugins/<owner>__<repo>.yml`. Requirements: `package.json` must declare `dsh.bundle` (not just `dsh.client`), and only `description.en` is mandatory.
 
-npm 的已发布版本不可覆盖（`npm unpublish` 有 72 小时限制且不推荐）。回滚方式是**发一个更高版本的修复**，并在 CHANGELOG 写明撤回原因。
+## 8. Rollback
+
+Published npm versions cannot be overwritten (`npm unpublish` is limited to 72 hours and discouraged). Roll back by **shipping a higher version** and stating the reason in `CHANGELOG.md`.

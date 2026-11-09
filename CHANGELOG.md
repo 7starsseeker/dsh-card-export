@@ -5,6 +5,11 @@
 
 ## [Unreleased]
 
+### 修复
+
+- **README 里 GenUI 的链接指向一个不存在的账号**：`https://github.com/changfenhuang/dsh-genui` 是照 npm scope（`@changfenhuang/dsh-genui`）拼出来的，GitHub 上并没有 `changfenhuang` 这个账号（连用户页都是 404）。插件自己的 `package.json` 在 `repository` / `homepage` / `bugs` 三处都声明的是 `omdsh-dev/dsh-genui`，两份 README 的链接一并改到后者。
+- **同一个插件的显示名有两种写法**：正文写 `gen-ui`，插件自报的名字是 `GenUI`（`dshGo.title`）。两份 README 与 `skills/transcript-card/SKILL.md` 统一成 `GenUI`。
+
 ## [0.1.1] — 2026-11-09
 
 只有文档与打包清单修正，`lib/` 与 `tools/` 代码零改动（`npm pack --dry-run` 除多带一份 `RELEASING.zh-CN.md` 外与原包一致）。发这个版本是为了让 npm 包页、仓库文档和 `engines` 三处说法一致，同时用它验证 Trusted Publishing（OIDC）链路。

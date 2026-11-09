@@ -1,0 +1,63 @@
+name: Bug report
+description: 渲染错位、导出失败、解析异常
+labels: [bug]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        先跑 `npm run smoke` 与 `npm run doctor`，把输出贴进来——大多数问题能在这两步定位。
+        涉及安全的问题请不要走这里，见 SECURITY.md。
+  - type: input
+    id: version
+    attributes:
+      label: 版本
+      description: package.json 的 version，或 `npm view dsh-card-export version`
+      placeholder: '0.1.0'
+    validations:
+      required: true
+  - type: dropdown
+    id: os
+    attributes:
+      label: 操作系统
+      options: [Windows, macOS, Linux, 容器内（Docker/K8s）]
+    validations:
+      required: true
+  - type: dropdown
+    id: browser
+    attributes:
+      label: 实际用到的浏览器
+      description: 见 `node tools/doctor.mjs` 里的「实际选用」
+      options: [Edge, Chrome, Brave, Chromium, Vivaldi, 无可用浏览器（降级 PDF/HTML）]
+    validations:
+      required: true
+  - type: dropdown
+    id: skill
+    attributes:
+      label: 涉及的技能
+      options: [report-card, transcript-card, 插件挂载/配置, 不确定]
+    validations:
+      required: true
+  - type: textarea
+    id: what
+    attributes:
+      label: 发生了什么
+      description: 期望 vs 实际。如果有图，贴图或描述错位位置。
+    validations:
+      required: true
+  - type: textarea
+    id: reproduce
+    attributes:
+      label: 复现步骤
+      description: 完整命令（可脱敏）。能从最小输入复现最好。
+      placeholder: |
+        node tools/render-report.mjs cases/sample-report.md --out ./out --png
+    validations:
+      required: true
+  - type: textarea
+    id: logs
+    attributes:
+      label: 自检与诊断输出
+      description: `npm run smoke` 与 `node tools/doctor.mjs` 的原始输出（可脱敏）
+      render: shell
+    validations:
+      required: true

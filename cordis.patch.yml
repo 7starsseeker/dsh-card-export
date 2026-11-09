@@ -1,0 +1,12 @@
+# dsh-card-export 的 bundle patch 层。
+#
+# `dsh plugin add <本包>` 会读本文件，把这条 loader entry 插进 profile 树。
+# 两条硬规则（与 dsh-fact-check 同）：
+#   · `name` 必须与 package.json 的 `name` 完全一致；
+#   · `id` 是 Cordis 插件 id，等于 lib/index.js 的 `export const name`。
+#
+# 本插件没有需要覆写的配置：渲染器路径、输出目录、主题等运行时选择
+# 全部走环境变量（RENDER_BROWSER / CARD_EXPORT_READINESS）或技能正文里的默认值。
+- insert:
+    - id: card-export
+      name: 'dsh-card-export'

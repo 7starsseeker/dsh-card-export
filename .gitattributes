@@ -1,0 +1,13 @@
+* text=auto eol=lf
+
+# Windows 下保持 LF，避免整仓 CRLF 抖动
+*.js   text eol=lf
+*.mjs  text eol=lf
+*.json text eol=lf
+*.md   text eol=lf
+*.yml  text eol=lf
+
+# 二进制/样张不参与行尾转换
+*.png  binary
+*.pdf  binary
+*.zstd binary

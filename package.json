@@ -1,0 +1,75 @@
+{
+  "name": "dsh-card-export",
+  "version": "0.1.0",
+  "description": "Report and conversation export for DeepSeek Harness: renders any Markdown report (fact-check reports get a summary card plus a full verbatim long image) and any DSH session excerpt into shareable PNG images. Zero npm dependencies — it drives the Chromium-family browser already on the machine (Edge → Chrome → others), degrades to PDF, then to HTML.",
+  "type": "module",
+  "main": "lib/index.js",
+  "exports": {
+    ".": "./lib/index.js",
+    "./package.json": "./package.json"
+  },
+  "scripts": {
+    "smoke": "node tools/smoke-rasterize.mjs && node tools/smoke-readiness.mjs && node tools/smoke-report.mjs && node tools/smoke-transcript.mjs && node tools/smoke-dshui.mjs && node tools/smoke-factcheck-detect.mjs && node tools/smoke-plugin.mjs && node tools/smoke-crop.mjs && node tools/smoke-coverage.mjs && node tools/smoke-conformance.mjs && node tools/smoke-math.mjs",
+    "doctor": "node tools/doctor.mjs",
+    "config": "node tools/config.mjs",
+    "render:sample": "node tools/render-report.mjs cases/sample-report.md --out ./out --png",
+    "render:generic": "node tools/render-report.mjs cases/sample-generic.md --out ./out --png",
+    "crop": "node tools/crop-image.mjs"
+  },
+  "engines": {
+    "node": ">=18"
+  },
+  "dsh": {
+    "bundle": {
+      "patch": "./cordis.patch.yml"
+    }
+  },
+  "files": [
+    "lib",
+    "tools",
+    "!tools/_*",
+    "skills",
+    "!skills/_*",
+    "cases",
+    "cordis.patch.yml",
+    "README.md",
+    "README.zh-CN.md",
+    "CHANGELOG.md",
+    "CONTRIBUTING.md",
+    "CONTRIBUTING.zh-CN.md",
+    "SECURITY.md",
+    "SECURITY.zh-CN.md",
+    "RELEASING.md",
+    "LICENSE",
+    "NOTICE"
+  ],
+  "keywords": [
+    "deepseek-harness",
+    "dsh",
+    "dsh-plugin",
+    "cordis",
+    "skill",
+    "report",
+    "screenshot",
+    "long-image",
+    "card",
+    "transcript",
+    "markdown",
+    "png",
+    "zero-dependency"
+  ],
+  "license": "Apache-2.0",
+  "author": "7starsseeker",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/7starsseeker/dsh-card-export.git"
+  },
+  "homepage": "https://github.com/7starsseeker/dsh-card-export#readme",
+  "bugs": {
+    "url": "https://github.com/7starsseeker/dsh-card-export/issues"
+  },
+  "publishConfig": {
+    "access": "public",
+    "registry": "https://registry.npmjs.org/"
+  }
+}

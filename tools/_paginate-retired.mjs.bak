@@ -1,0 +1,60 @@
+#!/usr/bin/env node
+/**
+ * 分页切分：把一张过高的长图切成若干张，**切点必须落在内容块边界**。
+ *
+ * 只做纯计算，不碰浏览器：
+ *   blocks  [[top, height], …]  各块在整页中的绝对位置（由页面自报）
+ *   target  每页允许的最大高度（CSS px）
+ *   head    每页顶部固定占用（页眉 + 上边距）
+ *   foot    每页底部固定占用（页脚 + 下边距）
+ *
+ * 规则：
+ *   · 一页放不下就翻页，绝不在块中间切；
+ *   · 单块本身超过一页时，它独占一页（宁可有张超高的，也不切碎内容）；
+ *   · 返回的每页是「块下标区间」，交给渲染器重出该页。
+ */
+
+export const DEFAULT_SPLIT_PX = 8000
+
+/**
+ * @param {Array<[number,number]>} blocks
+ * @param {{target?:number, head?:number, foot?:number}} opts
+ * @returns {{pages:Array<{from:number,to:number,height:number}>, oversized:number[]}}
+ */
+export function planPages(blocks, opts = {}) {
+  const target = opts.target || DEFAULT_SPLIT_PX
+  const head = opts.head ?? 0
+  const foot = opts.foot ?? 0
+  const budget = Math.max(400, target - head - foot)
+
+  const pages = []
+  const oversized = []
+  let cur = null
+
+  for (let i = 0; i < blocks.length; i++) {
+    const h = Math.max(1, blocks[i][1])
+    if (h > budget) oversized.push(i)
+
+    if (!cur) {
+      cur = { from: i, to: i, height: h }
+      continue
+    }
+    if (cur.height + h <= budget) {
+      cur.to = i
+      cur.height += h
+    } else {
+      pages.push(cur)
+      cur = { from: i, to: i, height: h }
+    }
+  }
+  if (cur) pages.push(cur)
+  return { pages, oversized }
+}
+
+/** 便于人读的摘要。 */
+export function describePlan(plan, totalHeight) {
+  const n = plan.pages.length
+  if (n <= 1) return '无需分页'
+  const ranges = plan.pages.map((p, i) => `第 ${i + 1} 张：块 ${p.from + 1}–${p.to + 1}（≈${p.height}px）`)
+  return `共 ${n} 张（原高 ≈${totalHeight}px）\n` + ranges.join('\n')
+}

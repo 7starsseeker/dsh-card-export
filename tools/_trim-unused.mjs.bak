@@ -1,0 +1,154 @@
+#!/usr/bin/env node
+/**
+ * trim — 裁掉 PNG 底部的纯色空白带。
+ *
+ * 为什么需要：浏览器按页面自报高度截图，而"自报高度"与"实际画到的位置"之间总有偏差
+ * （实测 200+ px，且不同页面偏差不同），于是每张图底部会留一条背景色空带。
+ * 与其和浏览器的布局算法较劲，不如在出图后按像素裁掉——**对任何页面都成立**。
+ *
+ * 只用 node:zlib，不引依赖。仅支持 8-bit、非隔行的 RGB/RGBA（Edge 的截图就是这两种）。
+ * 任何一步不符合预期就原样返回，绝不把好图裁坏。
+ */
+
+import { readFileSync, writeFileSync } from 'node:fs'
+import { inflateSync, deflateSync } from 'node:zlib'
+
+const SIG = Buffer.from([0x89, 0x50, 0x4e, 0x47, 0x0d, 0x0a, 0x1a, 0x0a])
+
+function readChunks(buf) {
+  const chunks = []
+  let off = 8
+  while (off + 8 <= buf.length) {
+    const len = buf.readUInt32BE(off)
+    const type = buf.toString('latin1', off + 4, off + 8)
+    const data = buf.subarray(off + 8, off + 8 + len)
+    chunks.push({ type, data })
+    off += 12 + len
+    if (type === 'IEND') break
+  }
+  return chunks
+}
+
+function paeth(a, b, c) {
+  const p = a + b - c
+  const pa = Math.abs(p - a), pb = Math.abs(p - b), pc = Math.abs(p - c)
+  return pa <= pb && pa <= pc ? a : (pb <= pc ? b : c)
+}
+
+/** 解出行像素（未过滤）。 */
+function unfilter(raw, width, height, bpp) {
+  const rowBytes = width * bpp
+  const out = Buffer.alloc(rowBytes * height)
+  let pos = 0
+  for (let y = 0; y < height; y++) {
+    const filter = raw[pos++]
+    const row = raw.subarray(pos, pos + rowBytes)
+    pos += rowBytes
+    const cur = out.subarray(y * rowBytes, (y + 1) * rowBytes)
+    const prev = y > 0 ? out.subarray((y - 1) * rowBytes, y * rowBytes) : null
+    for (let i = 0; i < rowBytes; i++) {
+      const a = i >= bpp ? cur[i - bpp] : 0
+      const b = prev ? prev[i] : 0
+      const c = (i >= bpp && prev) ? prev[i - bpp] : 0
+      const x = row[i]
+      let v
+      switch (filter) {
+        case 0: v = x; break
+        case 1: v = x + a; break
+        case 2: v = x + b; break
+        case 3: v = x + ((a + b) >> 1); break
+        case 4: v = x + paeth(a, b, c); break
+        default: return null // 非法 filter，交给调用方放弃
+      }
+      cur[i] = v & 0xff
+    }
+  }
+  return out
+}
+
+function crc32(buf) {
+  let c, crc = 0xffffffff
+  for (let n = 0; n < buf.length; n++) {
+    c = (crc ^ buf[n]) & 0xff
+    for (let k = 0; k < 8; k++) c = c & 1 ? 0xedb88320 ^ (c >>> 1) : c >>> 1
+    crc = crc >>> 8 ^ c
+  }
+  return (crc ^ 0xffffffff) >>> 0
+}
+
+function chunk(type, data) {
+  const len = Buffer.alloc(4); len.writeUInt32BE(data.length)
+  const t = Buffer.from(type, 'latin1')
+  const crcBuf = Buffer.alloc(4)
+  crcBuf.writeUInt32BE(crc32(Buffer.concat([t, data])))
+  return Buffer.concat([len, t, data, crcBuf])
+}
+
+/**
+ * 裁掉底部纯色行。
+ * @param {string} file PNG 路径（原地覆盖）
+ * @param {{tolerance?:number, keep?:number}} opts
+ * @returns {{ok:boolean, before?:number, after?:number, reason?:string}}
+ */
+export function trimBottom(file, opts = {}) {
+  const tolerance = opts.tolerance ?? 8
+  const keep = opts.keep ?? 0
+  let before = 0
+  try {
+    const buf = readFileSync(file)
+    if (!buf.subarray(0, 8).equals(SIG)) return { ok: false, reason: '不是 PNG' }
+    const chunks = readChunks(buf)
+    const ihdr = chunks.find((c) => c.type === 'IHDR')
+    if (!ihdr) return { ok: false, reason: '缺 IHDR' }
+    const width = ihdr.data.readUInt32BE(0)
+    const height = ihdr.data.readUInt32BE(4)
+    const bitDepth = ihdr.data[8]
+    const colorType = ihdr.data[9]
+    const interlace = ihdr.data[12]
+    before = height
+    if (bitDepth !== 8 || interlace !== 0 || (colorType !== 2 && colorType !== 6)) {
+      return { ok: false, reason: `不支持的格式 bitDepth=${bitDepth} colorType=${colorType} interlace=${interlace}` }
+    }
+    const bpp = colorType === 6 ? 4 : 3
+    const raw = inflateSync(Buffer.concat(chunks.filter((c) => c.type === 'IDAT').map((c) => c.data)))
+    const pixels = unfilter(raw, width, height, bpp)
+    if (!pixels) return { ok: false, reason: '解压后数据异常' }
+
+    const rowBytes = width * bpp
+    // 背景色取样点放在左上角：卡片是居中的，四角一定是页面背景；按"倒数第几行"取样不稳（会被卡片内边距带偏）
+    const bg = pixels.subarray(2 * bpp, 2 * bpp + 3)
+    const isBlank = (y) => {
+      const row = pixels.subarray(y * rowBytes, (y + 1) * rowBytes)
+      for (let i = 0; i < rowBytes; i += bpp) {
+        if (Math.abs(row[i] - bg[0]) > tolerance ||
+            Math.abs(row[i + 1] - bg[1]) > tolerance ||
+            Math.abs(row[i + 2] - bg[2]) > tolerance) return false
+      }
+      return true
+    }
+
+    let last = height - 1
+    while (last > 0 && isBlank(last)) last--
+    const after = Math.min(height, last + 1 + keep)
+    if (after >= height) return { ok: true, before, after: height, reason: '没有空白可裁' }
+
+    // 重编码：每行都用 filter 0（None），保证解码端无歧义
+    const outRaw = Buffer.alloc((rowBytes + 1) * after)
+    for (let y = 0; y < after; y++) {
+      outRaw[y * (rowBytes + 1)] = 0
+      pixels.copy(outRaw, y * (rowBytes + 1) + 1, y * rowBytes, (y + 1) * rowBytes)
+    }
+    const ihdrOut = Buffer.from(ihdr.data)
+    ihdrOut.writeUInt32BE(after, 4)
+    const png = Buffer.concat([
+      SIG,
+      chunk('IHDR', ihdrOut),
+      chunk('IDAT', deflateSync(outRaw, { level: 6 })),
+      chunk('IEND', Buffer.alloc(0)),
+    ])
+    writeFileSync(file, png)
+    return { ok: true, before, after }
+  } catch (e) {
+    return { ok: false, before, reason: String(e.message || e).slice(0, 120) }
+  }
+}

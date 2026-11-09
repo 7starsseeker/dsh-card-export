@@ -1,0 +1,31 @@
+# 渲染产物
+out/
+*.png
+*.pdf
+!cases/**/*.png
+
+# 依赖与构建产物（本插件零依赖，正常不会有；装上也不该入库）
+node_modules/
+
+# 本机配置与状态（包外，误拷进来也不要提交）
+local.json
+secrets.json
+readiness.json
+
+# 运行日志
+*.log
+*.log.jsonl
+
+# 会话与附件：绝不允许提交
+*.jsonl.zstd
+session.v4.jsonl*
+
+# 本机代码索引（机器相关，可随时重建）
+.codegraph/
+
+# 编辑器
+.vscode/
+.idea/
+*.swp
+.DS_Store
+Thumbs.db

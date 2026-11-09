@@ -1,0 +1,60 @@
+name: selftest
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+  workflow_dispatch:
+
+jobs:
+  selftest:
+    name: ${{ matrix.os }} · node ${{ matrix.node }}
+    runs-on: ${{ matrix.os }}
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-latest, windows-latest]
+        node: ['18', '22']
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: ${{ matrix.node }}
+
+      - name: Zero runtime dependencies
+        shell: bash
+        run: |
+          node -e "const p=require('./package.json'); const n=Object.keys(p.dependencies||{}).length; if(n){console.error('dependencies must stay empty, found '+n); process.exit(1)} console.log('zero dependencies OK')"
+
+      - name: Renderer probe + container retry rules
+        run: node tools/smoke-rasterize.mjs
+
+      - name: First-run probe and advice matrix
+        run: node tools/smoke-readiness.mjs
+
+      - name: Report presets, brief, parsing
+        run: node tools/smoke-report.mjs
+
+      - name: Transcript parsing, ranges, levels
+        run: node tools/smoke-transcript.mjs
+
+      - name: dsh-ui card renderer and fallbacks
+        run: node tools/smoke-dshui.mjs
+
+      - name: fact-check detection (and the no-promotion rule)
+        run: node tools/smoke-factcheck-detect.mjs
+
+      - name: Plugin contract and per-skill toggles
+        run: node tools/smoke-plugin.mjs
+
+      - name: Separator detection and cropping
+        run: node tools/smoke-crop.mjs
+
+      - name: Content coverage (nothing silently dropped)
+        run: node tools/smoke-coverage.mjs
+
+      - name: Markdown conformance and known limits
+        run: node tools/smoke-conformance.mjs
+
+      - name: MathML formulas and layout attributes
+        run: node tools/smoke-math.mjs

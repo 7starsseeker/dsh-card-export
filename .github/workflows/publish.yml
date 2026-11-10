@@ -51,7 +51,14 @@ jobs:
       - name: Self-tests before publishing
         run: npm run smoke
 
+      # Only a tag names the release, so only a tag has something to compare
+      # against. workflow_dispatch can run on a branch, where `GITHUB_REF`
+      # keeps its `refs/heads/…` prefix, the comparison always failed, and a
+      # manual run was red no matter what the code did. On a branch the
+      # version in package.json is the input; npm's immutable published
+      # versions are the guard against re-publishing by accident.
       - name: Verify tag matches package version
+        if: startsWith(github.ref, 'refs/tags/')
         shell: bash
         run: |
           set -eo pipefail

@@ -1,13 +1,15 @@
-# 提案：给六个骨架补一份机器可读的锚点表（fact-check 2.0.0 内，不改版本号）
+# 提案：给六个骨架补一份机器可读的锚点表（已落地：表由 fact-check 提供）
 
 > 从 `dsh-card-export`（消费方）提给 `dsh-fact-check`（生产方）。
-> 状态：**已落地**。上游已在同一版本（2.0.0，未升版）加入 `reference/skeleton-anchors.json`，
-> 与 [`skeleton-anchors.draft.json`](./skeleton-anchors.draft.json) 逐字一致；消费方已改为读该文件
+> 状态：**已落地**。上游已提供 `reference/skeleton-anchors.json`，与
+> [`skeleton-anchors.draft.json`](./skeleton-anchors.draft.json) 逐字一致；消费方已改为读该文件
 > （`lib/modes/skeletons.mjs`，三级降级）。本目录仅作留档，**事实以上游文件为准**。
+>
+> 两边是单向联动：上游维护这份表，本仓只消费；上游从不调用本仓。
 
 ## 0. 三条硬约束
 
-1. **版本号仍是 2.0.0**——不升版本、不重发版、不改 `SKILL.md` 的 frontmatter 版本。
+1. **只补一份文件**，不改上游既有的报告模板与发布形态。
 2. **不动任何正文标题**，不新增、不改写、不删除一个 `##`。这份表只是把已有的标题事实写成机器能读的形式。
 3. **不改变任何行为**：这份 JSON 不被 fact-check 自己的流程读取，只给下游消费。
 
@@ -59,7 +61,7 @@ fact-check 2.0.0 把产物从"一种报告模板"扩到"六种骨架"（4-V 裁�
 ### 2.3 文档与记录（各一句）
 
 - `SKILL.md` §4b 那段「只有 4-V 有出图锚点」的引用块后面加一行：机器可读版本见 `reference/skeleton-anchors.json`；
-- `CHANGELOG.md` 的 2.0.0 小节 `其它` 里补一句"补一份机器可读的骨架锚点表，供出图侧消费；不改变行为"；
+- `CHANGELOG.md` 里补一句"补一份机器可读的骨架锚点表，供出图侧消费；不改变行为"；
 - `README` 里若提到出图契约，补一句同一事实。
 
 ## 3. 完成判据

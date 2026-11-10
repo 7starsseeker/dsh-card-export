@@ -11,6 +11,7 @@ Turn Markdown reports and DSH conversations into shareable images. A **DeepSeek 
 [![node](https://img.shields.io/badge/node-%3E%3D22.15-brightgreen.svg)](package.json)
 [![zero dependencies](https://img.shields.io/badge/dependencies-0-brightgreen.svg)](package.json)
 [![DSH plugin](https://img.shields.io/badge/DSH-plugin-1F3A8A.svg)](https://github.com/7starsseeker)
+[![](https://img.shields.io/badge/powered_by-dsh-4D6BFE?style=flat-square&logo=deepseek&logoColor=white)](https://github.com/deepseek-ai/deepseek-harness)
 
 Zero npm dependencies. No bundled browser, no Chromium download: it drives the Chromium-family browser already on the machine (Edge → Chrome → Brave/Chromium/Vivaldi), degrades to PDF, then delivers HTML.
 

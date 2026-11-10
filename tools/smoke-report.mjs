@@ -156,6 +156,197 @@ console.log('\n首图：多档结论要拆成逐条，不能挤成一段：')
   check('多档 → 中性徽标', /分档结论/.test(cover.html) && /3 档并列/.test(cover.html) || /分档结论/.test(cover.html))
 }
 
+// 长图顶部原来只挂 found[0] 一个档：三档结论的报告，长图顶上写着「已证实」，
+// 而长图里没有别处交代另两档——首图的中性徽标至少还指向右侧定档正文。两图必须说同一件事。
+const headOf = (html) => {
+  const a = html.indexOf('<div class="dhead">')
+  const b = html.indexOf('<div class="cut"')
+  return a === -1 ? '' : html.slice(a, b === -1 ? undefined : b)
+}
+
+console.log('\n长图：多档结论的顶部要挂全部档位：')
+{
+  const md = [
+    '# 测试报告', '',
+    '## 一句话结论', '',
+    '**这一组数字整体成立，但销量是第三方估算。**', '',
+    '定档：**已证实 / 高**（媒体评分、在线峰值、好评率均为一手平台数据）；**很可能属实 / 中高**（销量量级）；**不存在 / 已证伪**（"官方宣布首周销量""差评轰炸"）。', '',
+    '## 哪些是真的、哪些是假的', '', '- 甲', '',
+    '## 来源', '', '1. 官网 https://example.com',
+  ].join('\n')
+  const detail = buildReport(md, { preset: 'auto' }).pages.find((p) => p.kind === 'full')
+  const head = headOf(detail.html)
+  // 徽章只出现一次：在逐条行的 chip 里。顶部再挂一排同名徽章＝同一句话写两遍
+  check('三档 → 顶部三行逐条', (head.match(/class="tier-row"/g) || []).length === 3,
+    `实际 ${(head.match(/class="tier-row"/g) || []).length} 行`)
+  check('顶部不再只给一个全篇置信度', !/置信度 (高|中高|中|低)/.test(head), '仍在顶部写单一置信度')
+  check('每档各自的置信度跟着徽章', /已证实 \/ 高/.test(head) && /很可能属实 \/ 中高/.test(head))
+  check('顶部标出档数', /3 档并列/.test(head))
+  check('徽章不在逐条之外重复', (head.match(/class="dchip"/g) || []).length === 0,
+    `多出 ${(head.match(/class="dchip"/g) || []).length} 个`)
+  check('范围与档位对得上（不是错行）', /tier-chip[^>]*>已证实 \/ 高<\/span>[\s\S]{0,200}媒体评分/.test(head))
+}
+
+console.log('\n一行一档（没有「定档：」前缀）：也按分档逐条渲染，两图一致：')
+{
+  const md = [
+    '# 测试报告', '',
+    '## 一句话结论', '',
+    '**已证实 / 高**（媒体评分、在线峰值）', '',
+    '**证伪 / 中**（"官方宣布首周销量"）', '',
+    '## 哪些是真的、哪些是假的', '', '- 甲', '',
+    '## 来源', '', '1. 官网 https://example.com',
+  ].join('\n')
+  const pages = buildReport(md, { preset: 'auto' }).pages
+  const cover = pages.find((p) => p.kind === 'summary').html
+  const head = headOf(pages.find((p) => p.kind === 'full').html)
+  check('长图：两个档位都在（含证伪）', /已证实 \/ 高/.test(head) && /证伪 \/ 中/.test(head))
+  check('长图：顶部摆出两档范围', (head.match(/class="tier-row"/g) || []).length === 2,
+    `实际 ${(head.match(/class="tier-row"/g) || []).length} 行`)
+  // 短图：徽标写「N 档并列 · 见右侧」，右侧现在真有逐条可指
+  check('短图：徽标指向右侧', /见右侧/.test(cover))
+  check('短图：右侧摆出两档逐条', (cover.match(/class="tier-row"/g) || []).length === 2,
+    `实际 ${(cover.match(/class="tier-row"/g) || []).length} 行`)
+  check('短图：档位行不再在正文里重复一遍', !/class="judge"[\s\S]{0,400}已证实 \/ 高/.test(cover),
+    '同一句既当分档又当判断')
+  check('短图：仍是中性「分档结论」徽标（不冒充单一档）', /分档结论/.test(cover) && /2 档并列/.test(cover))
+}
+
+console.log('\n判断句里顺带点了档位（没有声明行）：徽标不能指向空处：')
+{
+  const md = [
+    '# 测试报告', '',
+    '## 一句话结论', '',
+    '按现有材料，**已证实**的只有平台数据，而**证伪**的是「官方宣布首周销量」一说。', '',
+    '## 哪些是真的、哪些是假的', '', '- 甲', '',
+    '## 来源', '', '1. 官网 https://example.com',
+  ].join('\n')
+  const pages = buildReport(md, { preset: 'auto' }).pages
+  const cover = pages.find((p) => p.kind === 'summary').html
+  check('短图：徽标不写「见右侧」（右侧没有逐条）', !/见右侧/.test(cover))
+  check('短图：把两档徽章自己摆出来', (cover.match(/class="dchip"/g) || []).length === 2,
+    `实际 ${(cover.match(/class="dchip"/g) || []).length} 个`)
+  check('短图：判断句原样保留', /按现有材料/.test(cover))
+  check('长图：顶部也列出两档', (headOf(pages.find((p) => p.kind === 'full').html).match(/class="dchip"/g) || []).length === 2)
+}
+
+console.log('\n有「定档」行时：短图不重复摆徽章：')
+{
+  const md = [
+    '# 测试报告', '',
+    '## 一句话结论', '',
+    '定档：**已证实 / 高**（媒体评分）；**很可能属实 / 中高**（销量量级）；**不存在 / 已证伪**（官方销量）。', '',
+    '## 哪些是真的、哪些是假的', '', '- 甲', '',
+    '## 来源', '', '1. 官网 https://example.com',
+  ].join('\n')
+  const cover = buildReport(md, { preset: 'auto' }).pages.find((p) => p.kind === 'summary').html
+  check('短图：徽标指向右侧（右侧确有逐条）', /见右侧/.test(cover))
+  check('短图：徽章只出现一次（在逐条行里）', (cover.match(/class="dchip"/g) || []).length === 0,
+    `多出 ${(cover.match(/class="dchip"/g) || []).length} 个徽章`)
+  check('短图：三行逐条仍在', (cover.match(/class="tier-row"/g) || []).length === 3)
+}
+
+console.log('\n长图：单档结论顶部保持原样：')
+{
+  const head = headOf(r.pages[1].html)
+  check('单档 → 一个徽章', (head.match(/class="dchip"/g) || []).length === 1)
+  check('单档 → 仍写档位与置信度', /✕ 证伪/.test(head) && /置信度 高/.test(head))
+  check('单档 → 不多摆分档行', !/class="tier-row"/.test(head) && !/档并列/.test(head))
+}
+
+/* ------------------------- 英文报告（同一套皮肤） ------------------------- */
+
+const enFc = [
+  '# Test report', '',
+  '## One-line verdict', '',
+  '**Confirmed** · Confidence: high (basis: two independent evaluations)', '',
+  '**Rail B (conservative reading)**: the magnitude is unconfirmed.', '',
+  'The claim holds on the two rows we could inspect.', '',
+  '**Checked on**: 2026-11-10', '',
+  '## What happened', '', 'Background sentence. [1]', '',
+  '## What is true, what is false', '',
+  '**✅ Confirmed — fact level**',
+  '- Fact one. [1]',
+  '**⚠️ Unconfirmed** (single source)',
+  '- Maybe. [2]',
+  '  > Must not be repeated as fact in any retelling',
+  '**❓ Unresolved** (sources conflict)',
+  '- Unclear. [1][2]',
+  '  > Must not be repeated as fact in any retelling', '',
+  '## Domestic vs international coverage', '',
+  '- Domestic channels: same numbers. [1]',
+  '- International channels: same numbers. [2]', '',
+  '## Why this happened', '', 'Because the table is laid out that way. [1]', '',
+  '## Stakeholders and contamination surface (annotation only, no downgrade)', '',
+  '**Rail A**: Confirmed — annotation does not enter tiering.', '',
+  '**Rail B (conservative reading)**: Unconfirmed.', '',
+  '| Source | Level | Observable basis | Rail B action |',
+  '|---|---|---|---|',
+  '| [1] Official | L1 | Public documents | Kept |', '',
+  '## One-sentence takeaway', '', 'It holds where it can be checked.', '',
+  '## What we could not verify', '', '- Magnitude: no independent recomputation.', '',
+  '## Sources (numbered appendix)', '', '1. Official page https://example.com — table', '',
+  '## Tools and capabilities used', '- Web search.',
+].join('\n')
+
+console.log('\n英文报告：同一套皮肤，标签整套换成英文：')
+{
+  const doc = buildReport(enFc)
+  const cover = doc.pages.find((p) => p.kind === 'summary').html
+  const detail = doc.pages.find((p) => p.kind === 'full').html
+  check('英文报告被识别为事实核查', looksLikeFactCheck(enFc) === true)
+  check('语言判定 = en', doc.data.lang === 'en', String(doc.data.lang))
+  check('仍走结论卡（verdict）', doc.kind === 'verdict', doc.kind)
+  check('页面 lang 属性 = en', /<html lang="en">/.test(cover))
+  check('无缺失段', doc.data.missing.length === 0, JSON.stringify(doc.data.missing))
+  check('档位解析 = 已证实（内部键不变）', doc.data.verdict.tier === '已证实', doc.data.verdict.tier)
+  check('置信度解析 = 高', doc.data.verdict.conf === '高', doc.data.verdict.conf)
+  check('徽标显示 ✓ Confirmed + Confidence high', /✓/.test(cover) && /Confirmed/.test(cover) && /Confidence high/.test(cover))
+  check('kickert 仍是 FACT CHECK REPORT', /FACT CHECK REPORT/.test(cover))
+  check('双轨用 Rail B 文案', /Rail B \(conservative reading\)/.test(cover))
+  check('不叠加英文解释（无双括号）', !/Rail B \(conservative reading\) \(what still holds/.test(cover))
+  check('一句话总结标签是英文', /One-sentence takeaway/.test(cover))
+  check('封面不再出现中文标签', !/置信度|一句话总结|核查口径|分档结论/.test(cover), '英文图上混进了中文')
+  check('长图小节标题全英文',
+    /01<\/i>What happened/.test(detail) && /02<\/i>What is true, what is false/.test(detail) &&
+    /08<\/i>Sources \(numbered appendix\)/.test(detail) && /09<\/i>Tools and capabilities used/.test(detail))
+  check('长图 kicker = FACT CHECK REPORT · DETAIL', /FACT CHECK REPORT · DETAIL/.test(detail))
+  check('长图顶部单档徽章 + Confidence', /✓ Confirmed/.test(detail) && /Confidence high/.test(detail))
+  check('断言分档标签英文', /&#160;Confirmed<\/span>/.test(detail) && /fact level/.test(detail))
+  check('禁引用警示英文', (detail.match(/Must not be cited as fact in any retelling/g) || []).length === 2,
+    `实际 ${(detail.match(/Must not be cited as fact in any retelling/g) || []).length} 处`)
+  check('英文报告的分档卡片仍带底纹（ban）', (detail.match(/class="fact ban"/g) || []).length === 2)
+  check('来源与视角解析出来', doc.data.sources.length === 1 && doc.data.views.length === 2,
+    `sources=${doc.data.sources.length} views=${doc.data.views.length}`)
+  check('英文报告不含中文段落标题', !/哪些是真的|本次未能核实/.test(detail))
+}
+
+console.log('\n语言可强制指定，且中英互不串味：')
+{
+  const forcedEn = buildReport(fc, { lang: 'en' })
+  const forcedZh = buildReport(enFc, { lang: 'zh' })
+  check('中文报告强制 en → 英文标签', /Confidence high|Confidence /.test(forcedEn.pages[0].html))
+  check('英文报告强制 zh → 中文标签', /置信度/.test(forcedZh.pages[0].html))
+  // 默认（不强制）时，中文产物里不该出现英文标签
+  check('中文默认产物没有英文标签', !/Confidence high|One-sentence takeaway|Must not be cited/.test(r.pages[1].html))
+}
+
+console.log('\n英文普通报告：doc 预设的 chrome 也要是英文：')
+{
+  const enDoc = ['# Quarterly note', '', 'Intro paragraph.', '', '## Numbers', '', 'Body one.', '', '## Outlook', '', 'Body two.'].join('\n')
+  const doc = buildReport(enDoc)
+  const cover = doc.pages[0].html
+  const full = doc.pages[1].html
+  check('英文普通报告 → doc', doc.kind === 'doc', doc.kind)
+  check('短图 kicker = REPORT · EXCERPT', /REPORT · EXCERPT/.test(cover))
+  check('短图目录标签英文', /Contents/.test(cover) && /In this report/.test(cover))
+  check('短图提示「导语/结论」用英文', /Lead|Conclusion/.test(cover))
+  check('字数口径 = words（不是「字」）', /words/.test(cover) && !/\d+ 字/.test(cover))
+  check('长图页脚英文', /Rendered by dsh-card-export/.test(full) && !/由 dsh-card-export/.test(full))
+  const zhDoc = buildReport(['# 季度说明', '', '导语一段。', '', '## 数字', '', '正文一。', '', '## 展望', '', '正文二。'].join('\n'))
+  check('中文普通报告仍写「字」', /字、2 节/.test(zhDoc.pages[0].html))
+}
+
 console.log('\n首图：徽标必须挨着被核查的内容：')
 {
   const md = [

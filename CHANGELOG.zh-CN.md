@@ -7,8 +7,18 @@
 
 ## [Unreleased]
 
+## [0.1.2] — 2026-11-10
+
+### 新增
+
+- **英文报告走同一套皮肤，标签整套换成英文**：此前锚点、档位词、界面文案三处都只认中文，英文报告会被判成普通文档（`looksLikeFactCheck = false`）——短图退化成「原文提取」，档位 / 双轨 / 断言分档全部消失，图上 chrome 也还是中文。现在：判定锚点中英各一套（`One-line verdict` / `What is true, what is false` / `Sources` 等，仍是「任意两段」即命中），档位词表收英文同义（Confirmed / Likely true / Unconfirmed / False / Unverifiable）并在内部映射回那五个固定语义（颜色与图标不变），界面文案集中进 `lib/modes/i18n.mjs` 的 label pack。语言**由报告自己的二级标题判定**（中英各数一遍取多者，都没命中时按 CJK 占比），`--lang zh|en` 可强制覆盖。短图 / 长图 / 页脚 / 禁引用警示 / 小节标题 / 档数徽标全部跟语言走；字数口径也分开——中文「约 N 字」数汉字，英文「About N words」数词（原来英文报告会把 12,585 个字符写成「12,585 字」）。
+- **报告图的语言不再由界面决定**：`report` 与 `generic` 两套预设的 chrome（kicker、导语/结论、目录、页脚、原文提取声明）同样按语言取文案，英文普通报告不再是「中文壳 + 英文正文」。
+
 ### 修复
 
+- **英文报告的图顶着一个中文假标题**：报告没有 H1 时，doc 预设会把第一个 `##` 当成文档标题，英文核查报告于是出现「标题 = One-line verdict」。英文锚点生效后这类报告走结论卡，标题回落到 `Fact Check Report`；`deriveTitle` 也改成先剥掉行内标记再截断（原来截断点落在 `**…**` 中间会留下半个 `**` 印在图上），英文副标题按「句号后跟空格」断句（`V4.1` 这类小数不再把句子截在半截）。
+
+- **多档结论时，长图顶部只写第一档、短图徽标指向空处**：报告一次给出多档结论时（平台数据=已证实、销量量级=很可能属实、无人说过的官方销量=已证伪），短图的中性「分档结论」徽标是对的，但两张图各有半截错。长图顶部钉死解析到的第一档——三档报告一打开就是「✓ 已证实」，另两档在长图里没有任何位置（「定档」那一行只进短图）；短图在多档却没写「定档：」行时，徽标仍写「见右侧」，而右侧只有一行行加粗的档位文字、没有任何分档。现在：长图顶部按档列出「徽章 + 覆盖范围」，徽章只出现一次（不再在上一行重复一遍）；「**已证实 / 高**（…）」这种一行一档、不带「定档：」前缀的写法，两图都按分档逐条渲染，正文里不再原样重复；多档但档位只夹在判断句里的，短图徽标不写「见右侧」，改为把各档徽章自己摆出来。单档报告的输出不变。
 - **README 里 GenUI 的链接指向一个不存在的账号**：`https://github.com/changfenhuang/dsh-genui` 是照 npm scope（`@changfenhuang/dsh-genui`）拼出来的，GitHub 上并没有 `changfenhuang` 这个账号（连用户页都是 404）。插件自己的 `package.json` 在 `repository` / `homepage` / `bugs` 三处都声明的是 `omdsh-dev/dsh-genui`，两份 README 的链接一并改到后者。
 - **同一个插件的显示名有两种写法**：正文写 `gen-ui`，插件自报的名字是 `GenUI`（`dshGo.title`）。两份 README 与 `skills/transcript-card/SKILL.md` 统一成 `GenUI`。
 - **中文 README 比英文少四个徽章**：英文版七个（selftest / npm / npm downloads / license / node / zero dependencies / DSH plugin），中文版只有三个（selftest / npm / license）。补上缺的四个，两份的徽章与顺序就此一致。
@@ -84,6 +94,7 @@
 - 字体吃系统字栈，跨机器字形有差异。
 - 容器沙箱重试路径只单测了判据，未在受限容器里跑完整链路。
 
-[Unreleased]: https://github.com/7starsseeker/dsh-card-export/compare/v0.1.1...HEAD
+[Unreleased]: https://github.com/7starsseeker/dsh-card-export/compare/v0.1.2...HEAD
+[0.1.2]: https://github.com/7starsseeker/dsh-card-export/releases/tag/v0.1.2
 [0.1.1]: https://github.com/7starsseeker/dsh-card-export/releases/tag/v0.1.1
 [0.1.0]: https://github.com/7starsseeker/dsh-card-export/releases/tag/v0.1.0

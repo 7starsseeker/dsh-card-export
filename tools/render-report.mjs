@@ -3,9 +3,10 @@
  * render-report — 任意 Markdown 报告 → 图片。
  *
  *   node tools/render-report.mjs <report.md> --out <dir> [--preset auto|factcheck|generic]
- *                                  [--title <标题>] [--png] [--width 960] [--dump]
+ *                                  [--title <标题>] [--lang zh|en] [--png] [--width 960] [--dump]
  *
  * 预设 auto 的判定规则见 lib/modes/report.mjs：三段特征标题全中才算事实核查报告。
+ * 语言默认由报告自己的二级标题判定（lib/modes/i18n.mjs）；--lang 只用来强制覆盖。
  * 不带 --png 时只输出 HTML（无浏览器环境也成立）。
  */
 
@@ -40,11 +41,15 @@ for (let i = 0; i < argv.length; i++) {
 }
 
 if (!files[0] || (!opt.out && opt.preflight !== true)) {
-  console.error('用法: node tools/render-report.mjs <report.md> --out <dir> [--preset auto|report|generic] [--title T] [--brief brief.json] [--png] [--width 960] [--html on|off] [--preflight] [--dump]')
+  console.error('用法: node tools/render-report.mjs <report.md> --out <dir> [--preset auto|report|generic] [--title T] [--lang zh|en] [--brief brief.json] [--png] [--width 960] [--html on|off] [--preflight] [--dump]')
   process.exit(2)
 }
 if (opt.preset && !PRESETS.includes(opt.preset)) {
   console.error(`--preset 只接受：${PRESETS.join(' | ')}`)
+  process.exit(2)
+}
+if (opt.lang && opt.lang !== 'zh' && opt.lang !== 'en') {
+  console.error('--lang 只接受：zh | en（默认按报告标题自动判定）')
   process.exit(2)
 }
 
@@ -104,7 +109,7 @@ if (htmlChoice === null && htmlInfo.found) {
 
 const allowHtml = htmlChoice !== 'off'
 setHtmlPassthrough(allowHtml)
-const built = buildReport(md, { preset: opt.preset, title: opt.title, brief })
+const built = buildReport(md, { preset: opt.preset, title: opt.title, brief, lang: opt.lang })
 
 if (opt.dump) {
   const info = {
@@ -115,9 +120,11 @@ if (opt.dump) {
   }
   if (built.preset === 'report' && built.data) {
     info.parsed = {
+      lang: built.data.lang,
       title: built.data.title,
       verdict: built.data.verdict.tier,
       confidence: built.data.verdict.conf,
+      tiers: built.data.verdict.tiers,
       facts: built.data.facts.length,
       views: built.data.views.length,
       sources: built.data.sources.length,

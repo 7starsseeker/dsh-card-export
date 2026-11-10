@@ -7,8 +7,18 @@ versioning follows [Semantic Versioning](https://semver.org/).
 
 ## [Unreleased]
 
+## [0.1.2] — 2026-11-10
+
+### Added
+
+- **English reports now get the same skin, in English**: the anchors, the tier vocabulary and the UI chrome were Chinese-only, so an English report was classified as a plain document (`looksLikeFactCheck = false`) — the summary card degraded to an "excerpt", the tier badge, the two rails and the per-claim tiering all disappeared, and the chrome stayed Chinese. Now the anchors exist in both languages (`One-line verdict` / `What is true, what is false` / `Sources`, still two-of-three to match), the tier vocabulary accepts the English equivalents (Confirmed / Likely true / Unconfirmed / False / Unverifiable) and maps them back onto the same five internal verdicts (colours and icons unchanged), and the UI strings live in a label pack in `lib/modes/i18n.mjs`. The language is **detected from the report's own headings** (count Chinese and English anchors, more wins; fall back to a CJK ratio) and can be overridden with `--lang zh|en`. Summary card, long image, footers, the "must not be cited" warning, section titles and the tier-count badge all follow the language; so does the size line — Chinese counts characters ("N 字"), English counts words ("About N words"), where an English report used to report 12,585 characters as "12,585 字".
+- **The document skin follows the report's language too**: the `report` and `generic` presets take their chrome (kicker, lead/conclusion, contents, footers, the "excerpt" disclaimer) from the same label pack, so an English plain report is no longer an English body in a Chinese shell.
+
 ### Fixed
 
+- **English reports opened on a bogus Chinese title**: with no H1, the document preset treats the first `##` as the document title, so English fact-check reports came out titled "One-line verdict". With the English anchors in place those reports take the verdict skin and fall back to `Fact Check Report`; `deriveTitle` also strips inline markup before truncating (a cut inside `**…**` used to leave half a `**` printed on the image) and breaks English sentences on "period followed by whitespace" (so `V4.1` no longer ends the sentence).
+
+- **With several verdicts, the long image's header kept only the first one and the summary card pointed at nothing**: when a report gives more than one tier (`已证实` for platform data, `很可能属实` for a third-party estimate, `已证伪` for a claim nobody ever made), the summary card's neutral `分档结论` badge was right, but each image was wrong in its own way. The long image pinned the first parsed tier to its top — a three-tier report opened on `✓ 已证实` with no place anywhere for the other two (`定档` only ever rendered into the summary card). And when a report splits tiers without a `定档:` line, the summary badge still said `见右侧` while the right side held nothing but bold lines of tier text. Now the long image lists one row per tier — badge plus the scope it covers — with each badge appearing exactly once; a `**已证实 / 高**（…）` line (one tier per line, no `定档:` prefix) is treated as a tier declaration in both images and no longer repeated verbatim in the prose; and if the tiers only appear inside a judgement sentence, the summary badge drops `见右侧` and shows the tier badges itself. Single-tier reports render exactly as before.
 - **The README linked GenUI at an account that does not exist**: `https://github.com/changfenhuang/dsh-genui` was assembled from the npm scope (`@changfenhuang/dsh-genui`), and there is no `changfenhuang` account on GitHub — even the user page is a 404. The plugin's own `package.json` declares `omdsh-dev/dsh-genui` in `repository`, `homepage` and `bugs`, so both READMEs now point there.
 - **One plugin carried two display names**: the prose said `gen-ui` while the plugin reports itself as `GenUI` (`dshGo.title`). Both READMEs and `skills/transcript-card/SKILL.md` now say `GenUI`.
 - **The Chinese README was missing four badges**: the English one carries seven (selftest / npm / npm downloads / license / node / zero dependencies / DSH plugin) while the Chinese one carried three (selftest / npm / license). The missing four are added, so both files now carry the same badges in the same order.
@@ -84,6 +94,7 @@ First release. Two skills on one zero-dependency rendering base.
 - Fonts come from the system stack, so glyphs differ across machines.
 - The container sandbox retry path is unit-tested at the predicate only; the full chain has not been run inside a restricted container.
 
-[Unreleased]: https://github.com/7starsseeker/dsh-card-export/compare/v0.1.1...HEAD
+[Unreleased]: https://github.com/7starsseeker/dsh-card-export/compare/v0.1.2...HEAD
+[0.1.2]: https://github.com/7starsseeker/dsh-card-export/releases/tag/v0.1.2
 [0.1.1]: https://github.com/7starsseeker/dsh-card-export/releases/tag/v0.1.1
 [0.1.0]: https://github.com/7starsseeker/dsh-card-export/releases/tag/v0.1.0

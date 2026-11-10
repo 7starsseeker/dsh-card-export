@@ -56,7 +56,7 @@
 - **短图**——在尽量小的版面给出足够信息。结论由**模型读完报告后撰写**（`--brief`），渲染器只排版；没给 brief 就退化为「原文提取」，并在图上标明。
 - **长图**——**严格按原报告的结构、顺序、内容**逐段还原：不重组、不删减、不改写、不替作者总结。
 
-产物由**预设**决定，不按报告内容区分：`report`（默认）=两张，`generic`（显式指定）=一张。来自 [dsh-fact-check](https://github.com/7starsseeker/dsh-fact-check) 的报告是 `report` 预设下的另一种皮肤：短图里多出档位徽标、甲乙双轨、断言分档；长图仍是报告原文。这套皮肤的识别依据就是报告自己的二级标题（`## 一句话结论` / `## 哪些是真的` / `## 来源` 命中任意两段），所以那条耦合归 fact-check 的报告模板所有，不归本插件。
+产物由**预设**决定，不按报告内容区分：`report`（默认）=两张，`generic`（显式指定）=一张。来自 [dsh-fact-check](https://github.com/7starsseeker/dsh-fact-check) 的报告是 `report` 预设下的另一种皮肤：短图里多出档位徽标、甲乙双轨、断言分档；长图仍是报告原文。这套皮肤的识别依据就是报告自己的二级标题（`## 一句话结论` / `## 哪些是真的` / `## 来源` 命中任意两段），所以那条耦合归 fact-check 的报告模板所有，不归本插件。**英文报告同样适用**：等价锚点是 `One-line verdict` / `What is true, what is false` / `Sources`，走上同一套皮肤、同一套判定语义，只是标签整套换成英文（Confirmed / Likely true / Unconfirmed / False / Unverifiable，以及页脚、小节标题、禁引用警示）。语言由报告自己的二级标题判定，`--lang zh|en` 可强制；中文产物与改造前逐字节一致。
 
 ### transcript-card：忠实于你看到的
 

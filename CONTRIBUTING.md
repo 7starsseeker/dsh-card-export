@@ -5,7 +5,7 @@
 ## Run the self-tests first
 
 ```bash
-npm run smoke     # eleven suites, 364 assertions
+npm run smoke     # twelve suites, 484 assertions
 npm run doctor    # render-capability diagnosis (needs a browser)
 ```
 

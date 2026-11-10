@@ -5,7 +5,7 @@
 ## 先跑一遍自检
 
 ```bash
-npm run smoke     # 十一组，364 项
+npm run smoke     # 十二组，484 项
 npm run doctor    # 渲染能力诊断
 ```
 

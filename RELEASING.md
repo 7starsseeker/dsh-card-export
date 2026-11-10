@@ -21,7 +21,7 @@ For maintainers. Three rules first:
 ```bash
 node -e "const p=require('./package.json'); if(Object.keys(p.dependencies||{}).length) {console.error('dependencies are not empty, blocking'); process.exit(1)}; console.log('zero deps OK')"
 
-npm run smoke     # eleven suites, 364 assertions
+npm run smoke     # twelve suites, 484 assertions
 npm run doctor    # render-capability diagnosis (needs a browser)
 
 npm pack --dry-run

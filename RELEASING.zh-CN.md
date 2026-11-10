@@ -21,7 +21,7 @@
 ```bash
 node -e "const p=require('./package.json'); if(Object.keys(p.dependencies||{}).length) {console.error('依赖不为空，阻断发版'); process.exit(1)}; console.log('零依赖 OK')"
 
-npm run smoke     # 十一组自检，364 项
+npm run smoke     # 十二组自检，484 项
 npm run doctor    # 渲染能力诊断（需要浏览器）
 
 npm pack --dry-run   # 看会被发布哪些文件

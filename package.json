@@ -1,6 +1,6 @@
 {
   "name": "dsh-card-export",
-  "version": "0.1.2",
+  "version": "0.1.3",
   "description": "Report and conversation export for DeepSeek Harness: renders any Markdown report (fact-check reports get a summary card plus a full verbatim long image) and any DSH session excerpt into shareable PNG images. Zero npm dependencies — it drives the Chromium-family browser already on the machine (Edge → Chrome → others), degrades to PDF, then to HTML.",
   "type": "module",
   "main": "lib/index.js",
@@ -9,7 +9,7 @@
     "./package.json": "./package.json"
   },
   "scripts": {
-    "smoke": "node tools/smoke-rasterize.mjs && node tools/smoke-readiness.mjs && node tools/smoke-report.mjs && node tools/smoke-transcript.mjs && node tools/smoke-dshui.mjs && node tools/smoke-factcheck-detect.mjs && node tools/smoke-plugin.mjs && node tools/smoke-crop.mjs && node tools/smoke-coverage.mjs && node tools/smoke-conformance.mjs && node tools/smoke-math.mjs",
+    "smoke": "node tools/smoke-rasterize.mjs && node tools/smoke-readiness.mjs && node tools/smoke-report.mjs && node tools/smoke-transcript.mjs && node tools/smoke-dshui.mjs && node tools/smoke-factcheck-detect.mjs && node tools/smoke-fc200.mjs && node tools/smoke-plugin.mjs && node tools/smoke-crop.mjs && node tools/smoke-coverage.mjs && node tools/smoke-conformance.mjs && node tools/smoke-math.mjs",
     "doctor": "node tools/doctor.mjs",
     "config": "node tools/config.mjs",
     "render:sample": "node tools/render-report.mjs cases/sample-report.md --out ./out --png",

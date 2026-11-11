@@ -11,6 +11,7 @@
 [![node](https://img.shields.io/badge/node-%3E%3D22.15-brightgreen.svg)](package.json)
 [![zero dependencies](https://img.shields.io/badge/dependencies-0-brightgreen.svg)](package.json)
 [![DSH plugin](https://img.shields.io/badge/DSH-plugin-1F3A8A.svg)](https://github.com/7starsseeker)
+[![Awesome DSH Plugin](https://awesome-dsh-plugin.com/badge.svg)](https://awesome-dsh-plugin.com/zh/p/7starsseeker/dsh-card-export/)
 [![](https://img.shields.io/badge/powered_by-dsh-4D6BFE?style=flat-square&logo=deepseek&logoColor=white)](https://github.com/deepseek-ai/deepseek-harness)
 
 零 npm 依赖：不内置浏览器、不下载 Chromium，直接用机器上已有的 Chromium 系浏览器（Edge → Chrome → Brave/Chromium/Vivaldi），失败降级 PDF，再不行交付 HTML。

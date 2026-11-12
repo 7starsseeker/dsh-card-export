@@ -7,6 +7,25 @@ versioning follows [Semantic Versioning](https://semver.org/).
 
 ## [Unreleased]
 
+## [0.1.4] — 2026-11-12
+
+Follow-up to 0.1.3, driven by a real fact-check report: a section written as prose disappeared, the framing block was cramped, and neither image showed the question being answered.
+
+### Fixed
+
+- **`## 国内外视角` prose was dropped silently**: `parseViews` kept only `- 国内渠道：…`-style bullets, so a report that wrote the section as ordinary paragraphs produced an empty `data.views`, and `add()` returned without rendering the section. The detail renderer now detects prose (any non-bullet, non-heading, non-table, non-quote line) and falls back to rendering the section verbatim.
+- **The framing block was a single dense paragraph**: the preamble now gets its own bordered block with a label divider and paragraph/list rhythm, instead of one blockquote pressed against the rule above it.
+
+### Added
+
+- **The original question now appears in both images**: a report line `> **原始提问**：…` (English: `> **Original question**: …`) is parsed into `data.question` and rendered at the top of the summary card and the long image. It is removed from the preamble so it is not duplicated.
+- **The long image renders `## 一句话结论`**: previously only the summary card carried the judgment text; the long image opened with a tier badge and no explanation. It now gets a `一句话结论` block under the title.
+- **The summary card's judgment paragraphs get spacing**: the multi-question `问一 / 问二 / 合起来` lines no longer run together.
+
+### Tests
+
+- `smoke-fc200` 77/77 (adds: 03 prose not dropped; question parsed once; question rendered in both images; English question); `smoke-report` 145/145; `npm run smoke` twelve suites exit 0.
+
 ## [0.1.3] — 2026-11-11
 
 Alignment with fact-check 2.0.0, whose report templates multiplied from one to six. The verdict template itself did not move by a single character, so the existing skin is unchanged; what 2.0.0 introduced is *documents that hold more than one skeleton*, and those used to lose content.

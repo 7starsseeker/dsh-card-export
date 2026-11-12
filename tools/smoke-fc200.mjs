@@ -14,7 +14,7 @@
  */
 import { readFileSync } from 'node:fs'
 import { looksLikeFactCheck, buildReport } from '../lib/modes/report.mjs'
-import { parseReport, renderDetail } from '../lib/modes/verdict.mjs'
+import { parseReport, renderDetail, renderCover } from '../lib/modes/verdict.mjs'
 import { HEADINGS } from '../lib/modes/i18n.mjs'
 import { loadTable, normalizeTable, stripTailParen, detectSkeleton, BUILTIN_TABLE } from '../lib/modes/skeletons.mjs'
 
@@ -85,6 +85,55 @@ for (const [title] of ANCHORS.slice(1)) {
   check(`纯 4-V 保留了「${title}」`, norm(vHtml).includes(norm(title)))
 }
 
+/* ---------------- 2b. 03 允许普通段落：不能被 parseViews 静默丢掉 ---------------- */
+
+const proseViewsMd = [
+  '# X',
+  '',
+  '## 一句话结论',
+  '**证伪** · 置信度 中',
+  '',
+  '## 哪些是真的、哪些是假的',
+  '- 甲',
+  '',
+  '## 国内外视角',
+  '**国内渠道**：这是普通段落，不是项目符号。',
+  '',
+  '**差异说明**：第二段也必须保留。',
+  '',
+  '## 来源（编号附录）',
+  '- [1] a',
+].join('\n')
+const pv = parseReport(proseViewsMd)
+const pvHtml = renderDetail(pv)
+check('03 普通段落不被静默丢掉', pvHtml.includes('这是普通段落'))
+check('03 普通段落的后续段落也保留', pvHtml.includes('第二段也必须保留'))
+
+/* ---------------- 2c. 长图也要有「一句话结论」：不能只留一个档位徽标 ---------------- */
+
+const judgeMd = [
+  '# X',
+  '',
+  '## 一句话结论',
+  '**证伪** · 置信度 中',
+  '',
+  '**问一 · 有没有关系**：不成立。',
+  '',
+  '**问二 · 为什么是现在**：三个爆点叠加。',
+  '',
+  '## 始末 / 事实概要',
+  '甲。',
+  '',
+  '## 哪些是真的、哪些是假的',
+  '- 甲',
+  '',
+  '## 来源（编号附录）',
+  '- [1] a',
+].join('\n')
+const jd = parseReport(judgeMd)
+const jdHtml = renderDetail(jd)
+check('长图也渲染一句话结论', /class="djudge"/.test(jdHtml) && jdHtml.includes('问一') && jdHtml.includes('问二'))
+
 /* ---------------- 3. 前置块：定型卡 / 改型声明按原文进图 ---------------- */
 
 const pMd = read('fc-2.0.0-preamble.md')
@@ -99,6 +148,53 @@ check('没有定型标记的随意前言不画上图', (() => {
   const q = parseReport('随便一句开场白\n\n## 一句话结论\n**已证实 / 高**\n\n## 哪些是真的、哪些是假的\n- 甲\n\n## 来源（编号附录）\n- [1] a https://example.com\n')
   return q.preamble === '' && !renderDetail(q).includes('随便一句开场白')
 })())
+
+/* ---------------- 3b. 原始提问：报告与两张图都要出现 ---------------- */
+
+const qMd = [
+  '# X',
+  '',
+  '> **原始提问**：黄仁勋这件事和中期选举有没有关系？',
+  '',
+  '**核查口径**：公开信息判定。',
+  '',
+  '## 一句话结论',
+  '**证伪** · 置信度 中',
+  '',
+  '## 哪些是真的、哪些是假的',
+  '- 甲',
+  '',
+  '## 来源（编号附录）',
+  '- [1] a https://example.com',
+].join('\n')
+const q = parseReport(qMd)
+check('解析出原始提问', q.question === '黄仁勋这件事和中期选举有没有关系？', q.question)
+check('原始提问不重复留在前置块', !q.preamble.includes('原始提问'), q.preamble)
+const qCover = renderCover(q)
+const qDetail = renderDetail(q)
+check('短图渲染原始提问', /class="q"/.test(qCover) && qCover.includes('黄仁勋这件事和中期选举有没有关系'))
+check('长图渲染原始提问', /class="q"/.test(qDetail) && qDetail.includes('黄仁勋这件事和中期选举有没有关系'))
+
+const qEnMd = [
+  '# X',
+  '',
+  '> **Original question**: Is the Huang scandal connected to the midterms?',
+  '',
+  '**Checked on**: 2026-11-12.',
+  '',
+  '## 一句话结论',
+  '**证伪** · 置信度 中',
+  '',
+  '## 哪些是真的、哪些是假的',
+  '- 甲',
+  '',
+  '## 来源（编号附录）',
+  '- [1] a https://example.com',
+].join('\n')
+const qEn = parseReport(qEnMd, { lang: 'en' })
+check('英文原始提问也能解析', qEn.question === 'Is the Huang scandal connected to the midterms?', qEn.question)
+check('英文原始提问也渲染到短图', renderCover(qEn).includes('Is the Huang scandal connected to the midterms?'))
+check('英文原始提问也渲染到长图', renderDetail(qEn).includes('Is the Huang scandal connected to the midterms?'))
 
 /* ---------------- 4. 多产物编排：非裁决段按原文附在末尾 ---------------- */
 

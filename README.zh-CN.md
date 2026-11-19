@@ -80,6 +80,8 @@
 - **Chromium 系浏览器之一**（用于栅格化）：Edge / Chrome / Brave / Chromium / Vivaldi
 - DSH（插件形态），或直接调用 `tools/` 下的 CLI（不装插件也能跑）
 
+**2026-11-19 已在 DSH 0.2.2-rc.5 上验证。** 插件只用到 `ctx.skills.registerProvider()` 与 `ctx.effect()`；在已发布的宿主 0.2.2-rc.3 与 0.2.2-rc.5 之间，`@deepseek-ai/dsh-skill`（以及本插件站立的其余宿主包）逐字节一致，只有 `package.json` 里的版本字段在动。运行中的 rc.5 宿主上，会话技能目录列出了 `report-card` 与 `transcript-card`，描述取自各自的 `SKILL.md`；`node tools/smoke-plugin.mjs` 22/22。这一轮没复跑的：`npm run smoke` —— 其中栅格化那几步需要真实浏览器出一张图（分钟级，不是秒级）。
+
 没有浏览器也能用，但只能拿到 PDF 或 HTML——见[降级链](#降级链)。
 
 ## 安装

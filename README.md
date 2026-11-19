@@ -87,6 +87,8 @@ Pass `--no-render-ui` to always see raw JSON.
 - **One Chromium-family browser** for rasterisation: Edge / Chrome / Brave / Chromium / Vivaldi
 - DSH (as a plugin), or call the CLIs under `tools/` directly
 
+**Verified against DSH 0.2.2-rc.5 on 2026-11-19.** The plugin uses only `ctx.skills.registerProvider()` and `ctx.effect()`; between the published host 0.2.2-rc.3 and 0.2.2-rc.5 `@deepseek-ai/dsh-skill` — and every other package this plugin stands on — is byte-identical, with only version fields in `package.json` changing. On the running rc.5 host the session skill catalogue lists both `report-card` and `transcript-card` with their `SKILL.md` descriptions, and `node tools/smoke-plugin.mjs` is 22/22. Not re-run this round: `npm run smoke`, whose rasterisation steps need a real browser render (minutes, not seconds).
+
 Without a browser it still works, but only PDF or HTML is produced.
 
 ## Install
